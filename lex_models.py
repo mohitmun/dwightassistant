@@ -22,6 +22,8 @@ class LexApi:
     return self.client.get_bots()
   # def set_up_bot():
   #   pass
+  def get_bot_channel_associations(self):
+    return self.client.get_bot_channel_associations(botName="Dwight",botAlias="LATEST")
 
 class LexRunTimeApi:
   """docstring for LexRunTimeApi"""
