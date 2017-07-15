@@ -8,4 +8,5 @@ def handle(event):
     return get_last_email()
 
 def get_last_email():
-  return "this is last mail"
+  message = "this is last mail"
+  return utils.send_message(message)
