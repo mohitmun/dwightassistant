@@ -3,7 +3,7 @@ def get_bot():
         "description":'An Assistant to you',
         "intents":[
             {
-                'intentName': 'GetLastEmail',
+                'intentName': 'GetLastEmailGmail',
                 'intentVersion': '$LATEST'
             },
         ],
@@ -38,7 +38,7 @@ def get_slots():
 def get_intents():
   return [
     {
-      "name": "GetLastEmail",
+      "name": "GetLastEmailGmail",
       "description": "Get last email from you gmail inbox",
       "sampleUtterances": ["Show me last email", "Get me last email", "whats my last email"],
       # "dialogCodeHook": {
