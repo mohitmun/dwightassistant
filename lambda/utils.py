@@ -1,15 +1,29 @@
-import json
-def lambda_handler(event, context):
-    # TODO implement
-    return {
-      "sessionAttributes": {},
-      "dialogAction": {
-        "type": "Close",
-        "fulfillmentState": "Fulfilled",
-        "message": {
-          "contentType": "PlainText",
-          "content": "chus mamamamam" + json.dumps(event)
-        }
+import re
+def convert_camelcase(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def send_message(message):
+  return {
+    "sessionAttributes": {},
+    "dialogAction": {
+      "type": "Close",
+      "fulfillmentState": "Fulfilled",
+      "message": {
+        "contentType": "PlainText",
+        "content": message
+      }
+    }
+  }
+  # return {
+    #   "sessionAttributes": {},
+    #   "dialogAction": {
+    #     "type": "Close",
+    #     "fulfillmentState": "Fulfilled",
+    #     "message": {
+    #       "contentType": "PlainText",
+    #       "content": "hello bro" + json.dumps(event)
+    #     }
        #  ,
        # "responseCard": {
        #    "version": integer-value,
@@ -29,5 +43,5 @@ def lambda_handler(event, context):
        #         } 
        #     ] 
        #   }
-      }
-    }
+      # }
+    # }
