@@ -1,9 +1,10 @@
+import yaml
 def get_bot():
   return {"name":'Dwight',
         "description":'An Assistant to you',
         "intents":[
             {
-                'intentName': 'GetLastEmailGmail',
+                'intentName': 'ConnectSpotify',
                 'intentVersion': '$LATEST'
             },
         ],
@@ -28,7 +29,8 @@ def get_bot():
         },
         "idleSessionTTLInSeconds":123,
         "locale":'en-US',
-        "childDirected":True}
+        "childDirected":True,
+        }
 def get_slots():
   return [
     {
@@ -36,34 +38,8 @@ def get_slots():
     }
   ]
 def get_intents():
-  return [
-    {
-      "name": "GetLastEmailGmail",
-      "description": "Get last email from you gmail inbox",
-      "sampleUtterances": ["Show me last email", "Get me last email", "whats my last email"],
-      # "dialogCodeHook": {
-      #   "uri": "test",
-      #   "messageVersion": "$LATEST"
-      # }
-      "fulfillmentActivity": {
-        "type": "CodeHook",
-        "codeHook": {
-          "uri": "arn:aws:lambda:us-east-1:420758276632:function:test",
-          "messageVersion": "1.0"
-        }
-      },
-      "conclusionStatement": {
-        "messages": [
-          {
-            "contentType": "PlainText",
-            "content": "conclu 1"
-          },
-          {
-            "contentType": "PlainText",
-            "content": "conclu 2"
-          }
-        ]
-      }
-    }
-  ]
-  
+  with open("data.yml", 'r') as stream:
+    try:
+        return yaml.load(stream)["intents"]
+    except yaml.YAMLError as exc:
+        print(exc)
