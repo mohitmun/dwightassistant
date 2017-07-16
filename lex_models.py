@@ -19,7 +19,10 @@ class LexApi:
   def create_intent(self):
     res = []
     for intent in data.get_intents():
-      intent["checksum"] = self.get_intent(intent["name"])["checksum"]
+      try:        
+        intent["checksum"] = self.get_intent(intent["name"])["checksum"]
+      except Exception as e:
+        pass        
       response = self.client.put_intent(**intent)
       res.append(response)
     return res

@@ -2,19 +2,37 @@ from requests_oauth2 import OAuth2
 import os
 import utils
 import dynamodb
-oauth2_handler = OAuth2(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'], "https://accounts.spotify.com/", "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/spotify", "authorize", "api/token")
+import json
+from urllib import quote, urlencode
+import base64
+
+redirect_uri = "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/spotify"
+oauth2_handler = OAuth2(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'], "https://accounts.spotify.com/", redirect_uri, "authorize", "api/token")
 authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
 
 def save_access_token(event):
   a = 1  
   code = event["queryStringParameters"]["code"]
+  user_id = event["headers"]["Cookie"].split("=")[-1]
+  res = get_and_save_access_code(code, user_id)
   return {
     'statusCode': '200',
-    'body': {"message": "Spotify Connected!", "event": event},
+    'body': json.dumps({"message": "Spotify Connected!",  "event": event, "res": res}),
     'headers': {
         'Content-Type': 'application/json',
     },
   }
+
+def get_and_save_access_code(code, user_id):
+  base64_id_secret = base64.b64encode("{0}:{1}".format(os.environ["SPOTIFY_CLIENT_ID"], os.environ["SPOTIFY_CLIENT_SECRET"]))
+  command = "curl -d grant_type=authorization_code -d code={0} -d redirect_uri={1} -H \"Authorization: Basic {2}\" \"https://accounts.spotify.com/api/token\"".format(code, quote(redirect_uri), base64_id_secret, 'utf-8')
+  print(command)
+  response = os.popen(command).read()
+  # response = json.loads(response)
+  dynamodb.update_user(user_id, "auth", response)
+  response = json.loads(response)
+  dynamodb.update_user(user_id, "access_token", response["access_token"])
+  return response
 
 def redirect_to_auth(event):
   user_id = event["queryStringParameters"]["user_id"]
@@ -32,11 +50,23 @@ def get_auth_url():
 def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
-  if underscore_name == "connect_spotify":
+  user = dynamodb.get_user(event["userId"])
+  not_connected = len(user) == 0
+  if underscore_name == "connect_spotify" or not_connected:
     user_id = dynamodb.add_user(event["userId"])
     return utils.send_message(utils.get_api_auth_url("connect-spotify") + "?user_id=" + user_id)
+  if underscore_name == "play_spotify":
+    return play_spotify(user)
+  if underscore_name == "stop_spotify":
+    return stop_spotify(user)
 
+def play_spotify(user):
+  cmd = 'curl -X PUT "https://api.spotify.com/v1/me/player/play" -H "Authorization: Bearer {0}".format(user["access_token"])'
+  response = os.popen(command).read()
 
+def stop_spotify(user):
+  'curl -X PUT "https://api.spotify.com/v1/me/player/pause" -H "Authorization: Bearer {0}".format(user["access_token"])'
+  response = os.popen(command).read()
 # curl -X PUT "https://api.spotify.com/v1/me/player/play" -H "Authorization: Bearer BQCF5bnU0EY0uTpkoC3HUl-66YJjZXu5ULt503BHEP-9WkMcro2xJcO4atyxl04hIdW4z_aLdHwslDX40oJSAsmX2h6e99Dvv4EOAl7Xj4dM_utbPJf9Adk0fuD0yas_vfPTjpjgfdmQYkE"
 
 # https://accounts.spotify.com/authorize/?client_id=a7ed7ac582c4421397e4336a9339d849&response_type=code&redirect_uri=https%3A%2F%2Fmamam.com&scope=user-modify-playback-state
