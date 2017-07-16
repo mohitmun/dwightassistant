@@ -1,13 +1,17 @@
 import json
 import gmail
+import spotify
 import utils
 def lambda_handler(event, context):
   currentIntent = event["currentIntent"]["name"]
   service = utils.convert_camelcase(currentIntent).split("_")[-1]
   if service == "gmail":
     return gmail.handle(event)
-  return "no service found"
-  
+  #check if oauth2
+  if event["resource"] == "/spotify"
+    code = event["queryStringParameters"]["code"]
+    spotify.save_access_token(code)
+
 def test():
   event = {
   "currentIntent": {
