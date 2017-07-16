@@ -1,6 +1,7 @@
 from requests_oauth2 import OAuth2
 import os
 import utils
+import dynamodb
 oauth2_handler = OAuth2(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'], "https://accounts.spotify.com/", "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/spotify", "authorize", "api/token")
 authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
 
@@ -32,7 +33,8 @@ def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
   if underscore_name == "connect_spotify":
-    return utils.send_message(utils.get_api_auth_url("connect-spotify") + "?user_id=" + event["userId"])
+    user_id = dynamodb.add_user(event["userId"])
+    return utils.send_message(utils.get_api_auth_url("connect-spotify") + "?user_id=" + user_id)
 
 
 # curl -X PUT "https://api.spotify.com/v1/me/player/play" -H "Authorization: Bearer BQCF5bnU0EY0uTpkoC3HUl-66YJjZXu5ULt503BHEP-9WkMcro2xJcO4atyxl04hIdW4z_aLdHwslDX40oJSAsmX2h6e99Dvv4EOAl7Xj4dM_utbPJf9Adk0fuD0yas_vfPTjpjgfdmQYkE"
