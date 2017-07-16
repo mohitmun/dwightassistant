@@ -7,8 +7,10 @@ def lambda_handler(event, context):
   service = utils.convert_camelcase(currentIntent).split("_")[-1]
   if service == "gmail":
     return gmail.handle(event)
+  if service == "spotify":
+    return spotify.handle(event)
   #check if oauth2
-  if event["resource"] == "/spotify"
+  if event["resource"] == "/spotify":
     code = event["queryStringParameters"]["code"]
     spotify.save_access_token(code)
 
@@ -16,7 +18,7 @@ def test():
   event = {
   "currentIntent": {
     "slots": {},
-    "name": "GetLastEmailGmail",
+    "name": "ConnectSpotify",
     "confirmationStatus": "None"
   },
   "bot": {
