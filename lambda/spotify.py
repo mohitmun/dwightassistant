@@ -8,3 +8,9 @@ def save_access_token(code):
 
 def get_auth_url():
   return authorization_url
+
+def handle(event):
+  currentIntent = event["currentIntent"]["name"]
+  underscore_name = utils.convert_camelcase(currentIntent)
+  if underscore_name == "connect_spotify":
+    return send_message(authorization_url)

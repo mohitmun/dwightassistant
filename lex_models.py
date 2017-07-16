@@ -1,5 +1,5 @@
 import boto3
-import gmail
+import data
 class LexApi:
   def __init__(self):
     self.client = boto3.client('lex-models')
@@ -8,17 +8,17 @@ class LexApi:
     return response
   def delete_intent(self):
     self.delete_bot();
-    for intent in gmail.get_intents():    
+    for intent in data.get_intents():    
       response = self.client.delete_intent(name=intent['name'])
     return True
   def create_bot(self):
-    params = gmail.get_bot()
+    params = data.get_bot()
     params["checksum"] = self.get_bot()["checksum"]
     response = self.client.put_bot(**params)
     return response
   def create_intent(self):
     res = []
-    for intent in gmail.get_intents():
+    for intent in data.get_intents():
       intent["checksum"] = self.get_intent(intent["name"])["checksum"]
       response = self.client.put_intent(**intent)
       res.append(response)
