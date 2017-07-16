@@ -1,11 +1,30 @@
 from requests_oauth2 import OAuth2
 import os
+import utils
 oauth2_handler = OAuth2(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'], "https://accounts.spotify.com/", "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/spotify", "authorize", "api/token")
 authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
 
-def save_access_token(code):
-  a = 1
+def save_access_token(event):
+  a = 1  
+  code = event["queryStringParameters"]["code"]
+  return {
+    'statusCode': '200',
+    'body': {"message": "Spotify Connected!", "event": event},
+    'headers': {
+        'Content-Type': 'application/json',
+    },
+  }
 
+def redirect_to_auth(event):
+  user_id = event["queryStringParameters"]["user_id"]
+  return {
+    'statusCode': '302',
+    'headers': {
+        'Location': authorization_url,
+        'Set-Cookie': 'user_id='+ user_id
+    },
+  }
+  
 def get_auth_url():
   return authorization_url
 
@@ -13,4 +32,17 @@ def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
   if underscore_name == "connect_spotify":
-    return send_message(authorization_url)
+    return utils.send_message(utils.get_api_auth_url("connect-spotify") + "?user_id=" + event["userId"])
+
+
+# curl -X PUT "https://api.spotify.com/v1/me/player/play" -H "Authorization: Bearer BQCF5bnU0EY0uTpkoC3HUl-66YJjZXu5ULt503BHEP-9WkMcro2xJcO4atyxl04hIdW4z_aLdHwslDX40oJSAsmX2h6e99Dvv4EOAl7Xj4dM_utbPJf9Adk0fuD0yas_vfPTjpjgfdmQYkE"
+
+# https://accounts.spotify.com/authorize/?client_id=a7ed7ac582c4421397e4336a9339d849&response_type=code&redirect_uri=https%3A%2F%2Fmamam.com&scope=user-modify-playback-state
+
+
+
+
+# \curl -d grant_type=authorization_code -d code=AQBpjD88SGOBw7k5G1C64tC-6qEZnwSSQl56t-9EPKZ58ZvaD4xdY9GO_xQbHBM5M0bEuKFqCkNlFtlTOf_NQFVi1K_YhAWuL_xKTRcmN3Oym62qFv-f-JTL2IRFkH6b0eFMuigb9X-toElrDV3gBLTAlX8UNkoo4voGNPxJAAOlp_nulVJh-gJkNWG4Qvjvp3tGxg6pA7_kd5UrLxB6G5_W2w -d redirect_uri=https%3A%2F%2Fmamam.com -H "Authorization: Basic YTdlZDdhYzU4MmM0NDIxMzk3ZTQzMzZhOTMzOWQ4NDk6NmRkNTQ4MGY2NzNkNGZlZThmN2QyMjU3MzdhOWViN2E=" "https://accounts.spotify.com/api/token"
+
+
+# {"access_token":"BQCF5bnU0EY0uTpkoC3HUl-66YJjZXu5ULt503BHEP-9WkMcro2xJcO4atyxl04hIdW4z_aLdHwslDX40oJSAsmX2h6e99Dvv4EOAl7Xj4dM_utbPJf9Adk0fuD0yas_vfPTjpjgfdmQYkE","token_type":"Bearer","expires_in":3600,"refresh_token":"AQAWdn2eyEmmM8e1-QpSkrQjcrCoA7YS2srYsV_G5enD6CSazPm8kDRi8hYrbmrqQjG8cO_QvcxM0THV2leLEpcOKGFzdc37zjSLzbJ0MFS0IjGZZakk99yvrdfScTwE1hA","scope":"user-modify-playback-state"}
