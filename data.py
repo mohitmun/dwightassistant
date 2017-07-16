@@ -1,13 +1,15 @@
 import yaml
 def get_bot():
+  intents = []
+  for i in get_intents():
+    intents.append(
+            {
+                'intentName': i["name"],
+                'intentVersion': '$LATEST'
+            })
   return {"name":'Dwight',
         "description":'An Assistant to you',
-        "intents":[
-            {
-                'intentName': 'ConnectSpotify',
-                'intentVersion': '$LATEST'
-            },
-        ],
+        "intents": intents,
         "clarificationPrompt":{
             'messages': [
                 {
