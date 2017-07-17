@@ -14,7 +14,7 @@ client_id = os.environ['GMAIL_CLIENT_ID']
 client_secret = os.environ['GMAIL_CLIENT_SECRET']
 auth_base = "https://accounts.google.com/o/oauth2/"
 oauth2_handler = OAuth2(client_id, client_secret, auth_base, redirect_uri, "auth", "token")
-authorization_url = oauth2_handler.authorize_url('email https://www.googleapis.com/auth/gmail.modify') + "&response_type=code&access_type=offline"
+authorization_url = oauth2_handler.authorize_url('email https://www.googleapis.com/auth/gmail.modify') + "&response_type=code&access_type=offline&prompt=consent"
 
 def get_and_save_access_code(code, user_id):
   command = "curl https://www.googleapis.com/oauth2/v4/token -d 'code={0}' -d 'client_id={1}' -d 'client_secret={2}' -d 'redirect_uri={3}' -d 'grant_type=authorization_code'".format(code, client_id, client_secret, redirect_uri)
@@ -67,7 +67,7 @@ def get_last_email_gmail(user):
   res = base_service.authorized_curl("https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=1", user)
   print(res)
   message = get_message(res.messages[0].id, user)
-  return utils.send_card(message.snippet, message.snippet, get_from(message), [{"text":"Reply", "value":"Reply"}])
+  return utils.send_card(message.snippet, message.snippet, get_from(message), [{"Reply":"Reply"}, {"Archive":"Archive"}, {"Forward": "Forward"}, {"Delete": "Delete"}])
 
 def get_message(message_id, user):
   url = "https://www.googleapis.com/gmail/v1/users/me/messages/{0}?format=metadata".format(message_id)
