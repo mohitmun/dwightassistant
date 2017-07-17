@@ -1,7 +1,11 @@
 import json
 import gmail
 import spotify
+import uber
 import utils
+
+# curl "https://graph.facebook.com/v2.6/1092183514214793?access_token="
+
 def lambda_handler(event, context):
   if "currentIntent" in event:
     currentIntent = event["currentIntent"]["name"]
@@ -20,6 +24,11 @@ def lambda_handler(event, context):
       return gmail.save_access_token(event)
     if event["resource"] == "/connect-gmail":
       return gmail.redirect_to_auth(event)
+
+    if event["resource"] == "/uber":
+      return uber.save_access_token(event)
+    if event["resource"] == "/connect-uber":
+      return uber.redirect_to_auth(event)
 
 def test():
   event = {
