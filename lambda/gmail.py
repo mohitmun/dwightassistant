@@ -45,7 +45,7 @@ def refresh_access_token(user):
   command = "curl https://www.googleapis.com/oauth2/v4/token -d 'refresh_token={0}' -d 'client_id={1}' -d 'client_secret={2}' -d 'grant_type=refresh_token'".format(base_service.get_refresh_token(user), client_id, client_secret)
   print(command)
   res = os.popen(command).read()
-  base_service.save_credentials(user["user_id"], res)
+  base_service.save_credentials(base_service.get_user_id(user), res)
   return res
 
 def handle(event):
@@ -59,7 +59,7 @@ def handle(event):
     if underscore_name == "get_last_email_gmail":
       return get_last_email_gmail(user)
   else:
-    return base_service.send_api_auth_link(user["user_id"]["S"])
+    return base_service.send_api_auth_link(base_service.get_user_id(user))
 
 def token_expired(user):
   return base_service.token_expired(user)
