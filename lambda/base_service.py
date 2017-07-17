@@ -84,6 +84,9 @@ class BaseService:
   def token_expired(self, user):
     return time.time() > int(self.get_expires_at(user))
 
+  def get_user_id(self, user):
+    return user["user_id"]["S"]
+
   def send_api_auth_link(self, user_id):
     return utils.send_message("Please give access to you {0} account {1}?user_id={2}".format(self.service, utils.get_api_auth_url("connect-{0}".format(self.service)), user_id))
 
