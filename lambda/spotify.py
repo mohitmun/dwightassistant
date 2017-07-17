@@ -47,7 +47,7 @@ def handle(event):
     if underscore_name == "stop_spotify":
       return stop_spotify(user)
   else:
-    return user
+    return base_service.send_api_auth_link(service, user["user_id"])
 
 def play_spotify(user):
   command = "curl -X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Authorization: Bearer {0}'".format(user["spotify_access_token"]["S"])

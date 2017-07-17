@@ -15,6 +15,8 @@ def handle(event, service):
   user = dynamodb.get_user(event["userId"])
   not_connected = len(user) == 0
   if not_connected:
-    user_id = dynamodb.add_user(event["userId"])
-    return utils.send_message("Please give access to you {0} account {1}?user_id={2}".format(service, utils.get_api_auth_url("connect-{0}".format(service)), user_id))
+    user = dynamodb.add_user(event["userId"])
   return user
+
+def send_api_auth_link(service, user_id):
+  return utils.send_message("Please give access to you {0} account {1}?user_id={2}".format(service, utils.get_api_auth_url("connect-{0}".format(service)), user_id))
