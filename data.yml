@@ -42,7 +42,8 @@ intents:
     description: 'Stop spotify'
     sampleUtterances:
       - 'pause song'
-      - 'pause song on spotify'
+      - 'stop song'
+      - 'stop song on spotify'
       - 'pause spotify'
       - 'pause on spotify'
     fulfillmentActivity:
