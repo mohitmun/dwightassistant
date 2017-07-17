@@ -4,7 +4,7 @@ def convert_camelcase(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 def get_api_auth_url(end_point):
-  return "tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/" + end_point
+  return "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/" + end_point
 
 def send_message(message):
   return {

@@ -41,10 +41,13 @@ def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
   user = base_service.handle(event, service)
-  if underscore_name == "play_spotify":
-    return play_spotify(user)
-  if underscore_name == "stop_spotify":
-    return stop_spotify(user)
+  if "spotify_access_token" in user:
+    if underscore_name == "play_spotify":
+      return play_spotify(user)
+    if underscore_name == "stop_spotify":
+      return stop_spotify(user)
+  else:
+    return user
 
 def play_spotify(user):
   command = "curl -X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Authorization: Bearer {0}'".format(user["spotify_access_token"]["S"])
