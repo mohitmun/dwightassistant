@@ -7,6 +7,7 @@ from urllib import quote, urlencode
 import base64
 import base_service
 service = "spotify"
+base_service = base_service.BaseService(service)
 redirect_uri = utils.get_api_auth_url(service)
 oauth2_handler = OAuth2(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'], "https://accounts.spotify.com/", redirect_uri, "authorize", "api/token")
 authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
@@ -27,12 +28,7 @@ def get_and_save_access_code(code, user_id):
   base64_id_secret = base64.b64encode("{0}:{1}".format(os.environ["SPOTIFY_CLIENT_ID"], os.environ["SPOTIFY_CLIENT_SECRET"]))
   command = "curl -d grant_type=authorization_code -d code={0} -d redirect_uri={1} -H \"Authorization: Basic {2}\" \"https://accounts.spotify.com/api/token\"".format(code, quote(redirect_uri), base64_id_secret, 'utf-8')
   print(command)
-  response = os.popen(command).read()
-  # response = json.loads(response)
-  dynamodb.update_user(user_id, "spotify_auth", response)
-  response = json.loads(response)
-  dynamodb.update_user(user_id, "spotify_access_token", response["access_token"])
-  return response
+  return base_service.get_and_save_access_code(user_id, command)
 
 def redirect_to_auth(event):
   return base_service.redirect_to_auth(event, authorization_url)
@@ -40,22 +36,22 @@ def redirect_to_auth(event):
 def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
-  user = base_service.handle(event, service)
+  user = base_service.handle(event)
   if "spotify_access_token" in user:
     if underscore_name == "play_spotify":
       return play_spotify(user)
     if underscore_name == "stop_spotify":
       return stop_spotify(user)
   else:
-    return base_service.send_api_auth_link(service, user["user_id"]["S"])
+    return base_service.send_api_auth_link(user["user_id"]["S"])
 
 def play_spotify(user):
-  command = "curl -X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Authorization: Bearer {0}'".format(user["spotify_access_token"]["S"])
+  command = "curl -X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Authorization: Bearer {0}'".format(base_service.get_access_token(user))
   print(command)
   return utils.send_message(os.popen(command).read())
 
 def stop_spotify(user):
-  command = "curl -X PUT 'https://api.spotify.com/v1/me/player/pause' -H 'Authorization: Bearer {0}'".format(user["spotify_access_token"]["S"])
+  command = "curl -X PUT 'https://api.spotify.com/v1/me/player/pause' -H 'Authorization: Bearer {0}'".format(base_service.get_access_token(user))
   print(command)
   return utils.send_message(os.popen(command).read())
 # curl -X PUT "https://api.spotify.com/v1/me/player/play" -H "Authorization: Bearer BQCF5bnU0EY0uTpkoC3HUl-66YJjZXu5ULt503BHEP-9WkMcro2xJcO4atyxl04hIdW4z_aLdHwslDX40oJSAsmX2h6e99Dvv4EOAl7Xj4dM_utbPJf9Adk0fuD0yas_vfPTjpjgfdmQYkE"
