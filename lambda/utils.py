@@ -11,7 +11,7 @@ def send_card(message, title, subTitle, buttons_dict):
   buttons = []
   for keyvalue in buttons_dict:
     for key in keyvalue:
-      buttons = buttons + {"text": key, "value": keyvalue[key]}
+      buttons = buttons + [{"text": key, "value": keyvalue[key]}]
   return {
       "sessionAttributes": {},
       "dialogAction": {
