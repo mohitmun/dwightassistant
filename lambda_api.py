@@ -29,6 +29,10 @@ class LambdaApi:
     return res
   
   def add_permission(self, FunctionName, Action, Principal):
+    #todo source arn
+    #from http://boto3.readthedocs.io/en/latest/reference/services/lambda.html
+    # Warning
+    # If you add a permission without providing the source ARN, any AWS account that creates a mapping to your function ARN can send events to invoke your Lambda function.
     return self.client.add_permission(FunctionName=FunctionName,StatementId="ID-{0}-{1}".format(FunctionName, int(time.time())), Action= Action, Principal=Principal)
 
   def update_function_configuration(self, FunctionName):

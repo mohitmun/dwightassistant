@@ -1,4 +1,9 @@
 intents:
+  - name: 'SearchGmail'
+    description: 'Search your gmail inbox'
+    sampleUtterances:
+      - "search gmail"
+      - "search for {q} in gmail"
   - name: 'GetLastEmailGmail'
     description: 'Get last email from you gmail inbox'
     sampleUtterances:

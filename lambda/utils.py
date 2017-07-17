@@ -1,11 +1,19 @@
 import re
 import json
+import os
 def convert_camelcase(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 def get_api_auth_url(end_point):
   return "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/" + end_point
+
+def get_latlong(s):
+  command = "curl 'https://maps.googleapis.com/maps/api/geocode/json?address={0}'".format(s.replace(" ", "+"))
+  res = os.popen(command).read()
+  res = json.loads(res)
+  res = res["results"][0]["geometry"]["location"]
+  return res
 
 def send_card(message, title, subTitle, buttons_dict):
   buttons = []
