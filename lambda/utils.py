@@ -1,4 +1,5 @@
 import re
+import json
 def convert_camelcase(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
@@ -7,6 +8,10 @@ def get_api_auth_url(end_point):
   return "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/" + end_point
 
 def send_message(message):
+  if type(message) is dict:
+    message = "Dict: "+ json.dumps(message)
+  if type(message) is list:
+    message = "List: " + json.dumps(message)
   return {
     "sessionAttributes": {},
     "dialogAction": {

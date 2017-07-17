@@ -13,10 +13,9 @@ def redirect_to_auth(event, authorization_url):
 
 def handle(event, service):
   user = dynamodb.get_user(event["userId"])
-  not_connected = len(user) == 0
-  if not_connected:
+  if len(user) == 0:
     user = dynamodb.add_user(event["userId"])
-  return user
+  return user[-1]
 
 def send_api_auth_link(service, user_id):
   return utils.send_message("Please give access to you {0} account {1}?user_id={2}".format(service, utils.get_api_auth_url("connect-{0}".format(service)), user_id))

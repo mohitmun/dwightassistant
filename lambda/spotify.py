@@ -47,14 +47,16 @@ def handle(event):
     if underscore_name == "stop_spotify":
       return stop_spotify(user)
   else:
-    return base_service.send_api_auth_link(service, user["user_id"])
+    return base_service.send_api_auth_link(service, user["user_id"]["S"])
 
 def play_spotify(user):
   command = "curl -X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Authorization: Bearer {0}'".format(user["spotify_access_token"]["S"])
+  print(command)
   return utils.send_message(os.popen(command).read())
 
 def stop_spotify(user):
   command = "curl -X PUT 'https://api.spotify.com/v1/me/player/pause' -H 'Authorization: Bearer {0}'".format(user["spotify_access_token"]["S"])
+  print(command)
   return utils.send_message(os.popen(command).read())
 # curl -X PUT "https://api.spotify.com/v1/me/player/play" -H "Authorization: Bearer BQCF5bnU0EY0uTpkoC3HUl-66YJjZXu5ULt503BHEP-9WkMcro2xJcO4atyxl04hIdW4z_aLdHwslDX40oJSAsmX2h6e99Dvv4EOAl7Xj4dM_utbPJf9Adk0fuD0yas_vfPTjpjgfdmQYkE"
 
