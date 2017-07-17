@@ -7,8 +7,11 @@ def convert_camelcase(name):
 def get_api_auth_url(end_point):
   return "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/" + end_point
 
-def send_card(message, title, subTitle, buttons):
-   return {
+def send_card(message, title, subTitle, buttons_dict):
+  buttons = []
+  for key in buttons_dict:
+    buttons = buttons + {"text": key, "value": buttons_dict[key]}
+  return {
       "sessionAttributes": {},
       "dialogAction": {
         "type": "Close",
