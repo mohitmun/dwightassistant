@@ -28,6 +28,12 @@ class BaseService:
   def access_token_key(self):
     return self.service + "_access_token"
 
+  def refresh_token_key(self):
+    return self.service + "_refresh_token"
+
+  def expires_in_key(self):
+    return self.service + "_expires_in"
+
   def auth_key(self):
     return self.service + "_auth"
 
@@ -36,13 +42,26 @@ class BaseService:
       return user[self.access_token_key()]["S"]
     return None
 
+  def get_refresh_token(self, user):
+    if self.refresh_token_key() in user:
+      return user[self.refresh_token_key()]["S"]
+    return None
+
+  def get_expires_in(self, user):
+    if self.expires_in_key() in user:
+      return user[self.expires_in_key()]["S"]
+    return None
+
   def get_and_save_access_code(self, user_id, command):
     response = os.popen(command).read()
     # response = json.loads(response)
     print(response)
     dynamodb.update_user(user_id, self.auth_key(), response)
     response = json.loads(response)
+    #todo can we bunch this?
     dynamodb.update_user(user_id, self.access_token_key(), response["access_token"])
+    dynamodb.update_user(user_id, self.refresh_token_key(), response["refresh_token"])
+    dynamodb.update_user(user_id, self.expires_in_key(), response["expires_in"])
     return response
 
   def send_api_auth_link(self, user_id):
