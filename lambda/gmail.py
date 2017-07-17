@@ -67,12 +67,15 @@ def get_last_email_gmail(user):
   res = base_service.authorized_curl("https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=1", user)
   print(res)
   message = get_message(res.messages[0].id, user)
-  return utils.send_card(message.snippet, message.snippet, get_from(message), [{"text":"Reply", value:"Reply"}])
+  return utils.send_card(message.snippet, message.snippet, get_from(message), [{"text":"Reply", "value":"Reply"}])
 
 def get_message(message_id, user):
   url = "https://www.googleapis.com/gmail/v1/users/me/messages/{0}?format=metadata".format(message_id)
   res = base_service.authorized_curl(url, user)
   return res
+
+def search_by_content(content, user):
+  return []
 
 def get_to(message):
   h = message.payload.headers
