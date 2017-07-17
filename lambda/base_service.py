@@ -74,7 +74,7 @@ class BaseService:
       dynamodb.update_user(user_id, self.refresh_token_key(), response["refresh_token"])
     if "expires_in" in response:
       dynamodb.update_user(user_id, self.expires_in_key(), str(response["expires_in"]))
-      dynamodb.update_user(user_id, self.expires_at_key(), str(time.time() + response["expires_in"]))
+      dynamodb.update_user(user_id, self.expires_at_key(), str(int(time.time()) + response["expires_in"]))
     return response
 
   def token_expired(self, user):
