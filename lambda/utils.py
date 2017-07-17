@@ -7,6 +7,33 @@ def convert_camelcase(name):
 def get_api_auth_url(end_point):
   return "https://tn78yzlfic.execute-api.us-east-1.amazonaws.com/a/" + end_point
 
+def send_card(message, title, subTitle, buttons):
+   return {
+      "sessionAttributes": {},
+      "dialogAction": {
+        "type": "Close",
+        "fulfillmentState": "Fulfilled",
+        "message": {
+          "contentType": "PlainText",
+          "content": message
+        }
+        ,
+       "responseCard": {
+          
+          "contentType": "application/vnd.amazonaws.card.generic",
+          "genericAttachments": [
+              {
+                 "title":title,
+                 "subTitle":subTitle,
+                 # "imageUrl":imageUrl,
+                 # "attachmentLinkUrl":attachmentLinkUrl,
+                 "buttons":buttons
+               } 
+           ] 
+         }
+      }
+    }
+
 def send_message(message):
   if type(message) is dict:
     message = "Dict: "+ json.dumps(message)
