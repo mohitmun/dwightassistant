@@ -1,9 +1,23 @@
+
 intents:
   - name: 'SearchGmail'
     description: 'Search your gmail inbox'
     sampleUtterances:
       - "search gmail"
       - "search for {q} in gmail"
+    slots:
+      - name: "q"
+        description: "Search query"
+        slotConstraint: 'Required'
+        slotType: 'query'
+        slotTypeVersion: "$LATEST"
+        sampleUtterances:
+          - "search for {q}"
+        valueElicitationPrompt:
+          messages:
+            - contentType: "PlainText"
+              content: "What is your search query"
+          maxAttempts: 3
   - name: 'GetLastEmailGmail'
     description: 'Get last email from you gmail inbox'
     sampleUtterances:
