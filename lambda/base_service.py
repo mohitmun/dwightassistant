@@ -65,6 +65,7 @@ class BaseService:
   def get_and_save_access_code(self, user_id, command):
     response = os.popen(command).read()
     # response = json.loads(response)
+    print("get_and_save_access_code:")
     print(response)
     dynamodb.update_user(user_id, self.auth_key(), response)
     response = json.loads(response)
