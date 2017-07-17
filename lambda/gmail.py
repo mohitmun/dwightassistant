@@ -53,24 +53,40 @@ def handle(event):
   user = base_service.handle(event)
   access_token = base_service.get_access_token(user)
   if access_token != None:
-    if time.time() > int(base_service.get_expires_at(user)):
+    if base_service.token_expired():
       refresh_access_token(user)
     if underscore_name == "get_last_email_gmail":
       return get_last_email_gmail(user)
   else:
     return base_service.send_api_auth_link(user["user_id"]["S"])
 
+def token_expired(user):
+  return base_service.token_expired(user)
 
 def get_last_email_gmail(user):
   res = base_service.authorized_curl("https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=1", user)
+  print(res)
   message_res = get_message(res.messages[0].id, user)
-  return utils.send_message(message_res.snippet)
+  return utils.send_card(message_res.snippet, message_res.snippet, get_from(message), [{"text":"Reply", value:"Reply"}])
 
 def get_message(message_id, user):
   url = "https://www.googleapis.com/gmail/v1/users/me/messages/{0}?format=metadata".format(message_id)
   res = base_service.authorized_curl(url, user)
   return res
 
+def get_to(message):
+  h = message.payload.headers
+  return [a for a in h if a['name'] == "To"][0].value
+
+def get_from(message):
+  h = message.payload.headers
+  return [a for a in h if a['name'] == "From"][0].value
+
+def get_subject(message):
+  h = message.payload.headers
+  return [a for a in h if a['name'] == "Subject"][0].value
+
+# DotMap(internalDate=u'1500214393000', historyId=u'11074', payload=DotMap(mimeType=u'multipart/mixed', headers=[DotMap(name=u'Received', value=u'from 816660975287 named unknown by gmailapi.google.com with HTTPREST; Sun, 16 Jul 2017 07:13:13 -0700'), DotMap(name=u'Date', value=u'Sun, 16 Jul 2017 07:13:13 -0700'), DotMap(name=u'From', value=u'Testmohitpara <testmohitpara@gmail.com>'), DotMap(name=u'To', value=u'testmohitpara@gmail.com'), DotMap(name=u'Message-Id', value=u'<CAKLm4q97Q=8AN=J+KX5kN2HP4dmzKS2Dzhz0LGKKgpuGx1kS-w@mail.gmail.com>'), DotMap(name=u'Subject', value=u'To: ravi@actonmagic.com new'), DotMap(name=u'Mime-Version', value=u'1.0'), DotMap(name=u'Content-Type', value=u'multipart/mixed; boundary="--==_mimepart_596b7471ccd32_131a43ff155c101d464970"; charset=UTF-8'), DotMap(name=u'Content-Transfer-Encoding', value=u'7bit')]), snippet=u'new', sizeEstimate=878, threadId=u'15d4bbef83ebb537', labelIds=[u'SENT', u'INBOX'], id=u'15d4bbef83ebb537')
 def test():
   user = dynamodb.get_item("AE66R0")
   return get_last_email_gmail(user)
