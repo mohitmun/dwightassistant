@@ -20,7 +20,12 @@ class LambdaApi:
           myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
     # return 1
     print("Uploading started")
-    return self.client.update_function_code(FunctionName="test", ZipFile=open("lambda.zip", "rb").read())
+    res = self.client.update_function_code(FunctionName="test", ZipFile=open("lambda.zip", "rb").read())
+    try:
+      os.system('osascript -e \'display notification "Uplading done" with title "ApiGateway"\'')
+    except Exception as e:
+      print("error")
+    return res
   
   def add_permission(self):
     return self.client.add_permission(FunctionName="test",StatementId="ID-12chutest", Action= "lambda:*", Principal="lex.amazonaws.com")
