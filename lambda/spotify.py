@@ -7,7 +7,7 @@ from urllib import quote, urlencode
 import base64
 import base_service
 service = "spotify"
-redirect_uri = utils.get_api_auth_url("spotify")
+redirect_uri = utils.get_api_auth_url(service)
 oauth2_handler = OAuth2(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'], "https://accounts.spotify.com/", redirect_uri, "authorize", "api/token")
 authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
 
