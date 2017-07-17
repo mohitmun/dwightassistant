@@ -10,12 +10,17 @@ class LambdaApi:
   def list_functions(self):
     return self.client.list_functions()
   
-  def update_function_code(self, FunctionName):
-    # zip_file = zipfile.ZipFile("lambda.zip", "w")  
-    # zip_file.write("lambdama/gmail.py",compress_type=zipfile.ZIP_DEFLATED)
+  def create_function(self, FunctionName, Role):
     with zipfile.ZipFile('lambda.zip', 'w') as myzip:
-    #   for f in os.listdir("lambda"):   
-    #     myzip.write("lambda/" + f, f)
+      for root, dirs, files in os.walk('lambda'):
+        for f in files:
+          myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
+    # return 1
+    print("Uploading started")
+    return self.client.create_function(FunctionName=FunctionName, Runtime="python2.7", Role=Role, Handler="lambda_handler", Code={"ZipFile": open("lambda.zip", "rb").read()})
+
+  def update_function_code(self, FunctionName):
+    with zipfile.ZipFile('lambda.zip', 'w') as myzip:
       for root, dirs, files in os.walk('lambda'):
         for f in files:
           myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
