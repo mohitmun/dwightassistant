@@ -45,6 +45,7 @@ def refresh_access_token(user):
   command = "curl https://www.googleapis.com/oauth2/v4/token -d 'refresh_token={0}' -d 'client_id={1}' -d 'client_secret={2}' -d 'grant_type=refresh_token'".format(base_service.get_refresh_token(user), client_id, client_secret)
   print(command)
   res = os.popen(command).read()
+  base_service.save_credentials(user["user_id"], res)
   return res
 
 def handle(event):
