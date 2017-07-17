@@ -53,7 +53,7 @@ def handle(event):
   user = base_service.handle(event)
   access_token = base_service.get_access_token(user)
   if access_token != None:
-    if base_service.token_expired():
+    if base_service.token_expired(user):
       refresh_access_token(user)
     if underscore_name == "get_last_email_gmail":
       return get_last_email_gmail(user)
