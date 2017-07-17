@@ -8,46 +8,69 @@ from urllib import quote, urlencode
 import base64
 import base_service
 service = "gmail"
+base_service = base_service.BaseService(service)
 redirect_uri = utils.get_api_auth_url(service)
-oauth2_handler = OAuth2(os.environ['GMAIL_CLIENT_ID'], os.environ['GMAIL_CLIENT_SECRET'], "https://accounts.spotify.com/", redirect_uri, "authorize", "api/token")
-authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
+client_id = os.environ['GMAIL_CLIENT_ID']
+client_secret = os.environ['GMAIL_CLIENT_SECRET']
+auth_base = "https://accounts.google.com/o/oauth2/"
+oauth2_handler = OAuth2(client_id, client_secret, auth_base, redirect_uri, "auth", "token")
+authorization_url = oauth2_handler.authorize_url('email https://www.googleapis.com/auth/gmail.modify') + "&response_type=code&access_type=offline"
+
+def get_and_save_access_code(code, user_id):
+  command = "curl https://www.googleapis.com/oauth2/v4/token -d 'code={0}' -d 'client_id={1}' -d 'client_secret={2}' -d 'redirect_uri={3}' -d 'grant_type=authorization_code'".format(code, client_id, client_secret, redirect_uri)
+  print(command)
+  return base_service.get_and_save_access_code(user_id, command)
 
 def save_access_token(event):
   code = event["queryStringParameters"]["code"]
   user_id = event["headers"]["Cookie"].split("=")[-1]
   res = get_and_save_access_code(code, user_id)
   return {
+    #todo remove res
     'statusCode': '200',
-    'body': json.dumps({"message": "Spotify Connected!",  "event": event, "res": res}),
+    'body': json.dumps({"message": "Gmail Connected!",  "event": event, "res": res}),
     'headers': {
         'Content-Type': 'application/json',
     },
   }
 
-def get_and_save_access_code(code, user_id):
-  base64_id_secret = base64.b64encode("{0}:{1}".format(os.environ["SPOTIFY_CLIENT_ID"], os.environ["SPOTIFY_CLIENT_SECRET"]))
-  command = "curl -d grant_type=authorization_code -d code={0} -d redirect_uri={1} -H \"Authorization: Basic {2}\" \"https://accounts.spotify.com/api/token\"".format(code, quote(redirect_uri), base64_id_secret, 'utf-8')
-  print(command)
-  response = os.popen(command).read()
-  # response = json.loads(response)
-  dynamodb.update_user(user_id, "spotify_auth", response)
-  response = json.loads(response)
-  dynamodb.update_user(user_id, "spotify_access_token", response["access_token"])
-  return response
-
 def redirect_to_auth(event):
   return base_service.redirect_to_auth(event, authorization_url)
+
+def get_authorization_url():
+  return authorization_url
+
+def refresh_access_token(user):
+  print("refresing token")
+  command = "curl https://www.googleapis.com/oauth2/v4/token -d 'refresh_token={0}' -d 'client_id={1}' -d 'client_secret={2}' -d 'grant_type=refresh_token'".format(base_service.get_refresh_token(user), client_id, client_secret)
+  print(command)
+  res = os.popen(command).read()
+  return res
 
 def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
-  user = base_service.handle(event, service)
-  if "spotify_access_token" in user:
+  user = base_service.handle(event)
+  access_token = base_service.get_access_token(user)
+  if access_token != None:
+    if time.time() > int(base_service.get_expires_at(user)):
+      refresh_access_token(user)
     if underscore_name == "get_last_email_gmail":
-      return get_last_email()
+      return get_last_email_gmail(user)
   else:
-    return base_service.send_api_auth_link(service, user["user_id"]["S"])
+    return base_service.send_api_auth_link(user["user_id"]["S"])
 
-def get_last_email():
-  message = "this is last mail"
-  return utils.send_message(message)
+
+def get_last_email_gmail(user):
+  res = base_service.authorized_curl("https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=1", user)
+  message_res = get_message(res.messages[0].id, user)
+  return utils.send_message(message_res.snippet)
+
+def get_message(message_id, user):
+  url = "https://www.googleapis.com/gmail/v1/users/me/messages/{0}?format=metadata".format(message_id)
+  res = base_service.authorized_curl(url, user)
+  return res
+
+def test():
+  user = dynamodb.get_item("AE66R0")
+  return get_last_email_gmail(user)
