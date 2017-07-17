@@ -9,7 +9,7 @@ class ApiGateway:
   def create_rest_api():
     self.client.create_rest_api(name="dwight")
 
-  def create_resource(res):
+  def create_resource(self, res):
     return self.client.create_resource(restApiId='tn78yzlfic', parentId='8qf6wmxlph',pathPart=res)
 
   def put_method(method):
