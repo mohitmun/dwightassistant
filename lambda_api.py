@@ -17,9 +17,9 @@ class LambdaApi:
     #     myzip.write("lambda/" + f, f)
       for root, dirs, files in os.walk('lambda'):
         for f in files:
-          if ".git" not in os.path.join(root, f):
-            myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
+          myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
     # return 1
+    print("Uploading started")
     return self.client.update_function_code(FunctionName="test", ZipFile=open("lambda.zip", "rb").read())
   
   def add_permission(self):
