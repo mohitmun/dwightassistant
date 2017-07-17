@@ -70,10 +70,15 @@ class BaseService:
     response = json.loads(response)
     #todo can we bunch this?
     dynamodb.update_user(user_id, self.access_token_key(), response["access_token"])
-    dynamodb.update_user(user_id, self.refresh_token_key(), response["refresh_token"])
-    dynamodb.update_user(user_id, self.expires_in_key(), str(response["expires_in"]))
-    dynamodb.update_user(user_id, self.expires_at_key(), str(time.time() + response["expires_in"]))
+    if "refresh_token" in response:
+      dynamodb.update_user(user_id, self.refresh_token_key(), response["refresh_token"])
+    if "expires_in" in response
+      dynamodb.update_user(user_id, self.expires_in_key(), str(response["expires_in"]))
+      dynamodb.update_user(user_id, self.expires_at_key(), str(time.time() + response["expires_in"]))
     return response
+
+  def token_expired(self, user):
+    return time.time() > int(self.get_expires_at(user))
 
   def send_api_auth_link(self, user_id):
     return utils.send_message("Please give access to you {0} account {1}?user_id={2}".format(self.service, utils.get_api_auth_url("connect-{0}".format(self.service)), user_id))
