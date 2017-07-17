@@ -37,7 +37,8 @@ def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
   user = base_service.handle(event)
-  if "spotify_access_token" in user:
+  access_token = base_service.get_access_token(user)
+  if access_token != None:
     if underscore_name == "play_spotify":
       return play_spotify(user)
     if underscore_name == "stop_spotify":
