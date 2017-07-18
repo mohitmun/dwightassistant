@@ -66,12 +66,13 @@ class BaseService:
     response = os.popen(command).read()
     # response = json.loads(response)
     print("get_and_save_access_code:")
+    print(command)
     print(response)
     dynamodb.update_user(user_id, self.auth_key(), response)
     response = json.loads(response)
     #todo can we bunch this?
     self.save_credentials(user_id, response)
-    return response
+    return dynamodb.get_item(user_id)
 
   def save_credentials(self, user_id, response):
     dynamodb.update_user(user_id, self.access_token_key(), response["access_token"])
