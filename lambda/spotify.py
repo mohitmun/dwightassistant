@@ -12,8 +12,7 @@ redirect_uri = utils.get_api_auth_url(service)
 client_id = os.environ['SPOTIFY_CLIENT_ID']
 client_secret = os.environ['SPOTIFY_CLIENT_SECRET']
 oauth2_handler = OAuth2(client_id, client_secret, "https://accounts.spotify.com/", redirect_uri, "authorize", "api/token")
-#todo cut down some permission
-authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
+authorization_url = oauth2_handler.authorize_url('user-read-playback-state user-read-private user-read-currently-playing user-modify-playback-state') + "&response_type=code"
 
 def save_access_token(event):
   code = event["queryStringParameters"]["code"]
@@ -21,7 +20,7 @@ def save_access_token(event):
   res = get_and_save_access_code(code, user_id)
   return {
     'statusCode': '200',
-    'body': json.dumps({"message": "Spotify Connected!",  "event": event, "res": res}),
+    'body': json.dumps({"message": "Spotify Connected, Now you can go back to chatbot!"}),
     'headers': {
         'Content-Type': 'application/json',
     },
@@ -54,6 +53,18 @@ def handle(event):
       return play_spotify_intent(user, event)
     if underscore_name == "stop_spotify":
       return stop_spotify_intent(user, event)
+    if underscore_name == "next_intent_spotify":
+      return next_intent_spotify(user);
+    if underscore_name == "pause_intent_spotify":
+      return stop_spotify_intent(user);
+    if underscore_name == "previous_intent_spotify":
+      return previous_intent_spotify(user);
+    if underscore_name == "shuffle_on_intent_spotify":
+      return shuffle_on_intent_spotify(user);
+    if underscore_name == "shuffle_off_intent_spotify":
+      return shuffle_off_intent_spotify(user);
+    if underscore_name == "stop_intent_spotify":
+      return stop_spotify_intent(user);
   else:
     return base_service.send_api_auth_link(user["user_id"]["S"])
 
@@ -92,10 +103,35 @@ def play_spotify_intent(user, event):
   res = base_service.authorized_curl(command, user)
   return utils.send_message(json.dumps(res) + " event: " + json.dumps(event))
 
-def stop_spotify_intent(user, event):
+def play_intent_spotify(user):
   command = "-X PUT 'https://api.spotify.com/v1/me/player/play'"
   res = base_service.authorized_curl(command, user)
-  return utils.send_message(json.dumps(res) + " event: " + json.dumps(event))
+  return utils.send_message("Playing Song..")
+
+def next_intent_spotify(user):
+  command = "-X PUT 'https://api.spotify.com/v1/me/player/next'"
+  res = base_service.authorized_curl(command, user)
+  return utils.send_message("Playing Next Song..")
+
+def previous_intent_spotify(user):
+  command = "-X PUT 'https://api.spotify.com/v1/me/player/previous'"
+  res = base_service.authorized_curl(command, user)
+  return utils.send_message("Playing Previous Song..")
+
+def shuffle_on_intent_spotify(user):
+  command = "-X PUT 'https://api.spotify.com/v1/me/player/shuffle?state=true'"
+  res = base_service.authorized_curl(command, user)
+  return utils.send_message("Shuffle on..")
+
+def shuffle_off_intent_spotify(user):
+  command = "-X PUT 'https://api.spotify.com/v1/me/player/shuffle?state=false'"
+  res = base_service.authorized_curl(command, user)
+  return utils.send_message("Shuffle off..")
+
+def stop_spotify_intent(user):
+  command = "-X PUT 'https://api.spotify.com/v1/me/player/play'"
+  res = base_service.authorized_curl(command, user)
+  return utils.send_message("Stopping spotify...")
 
 def test_user():
   return dynamodb.get_item("XB29T8")
