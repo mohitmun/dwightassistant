@@ -54,7 +54,7 @@ class LexRunTimeApi:
   """docstring for LexRunTimeApi"""
   def __init__(self):
     self.client = boto3.client('lex-runtime')
-  def send_message(self, message):
+  def send_message(self, userId, message):
 #     client.post_text(
 #     botName='string',
 #     botAlias='string',
@@ -64,4 +64,4 @@ class LexRunTimeApi:
 #     },
 #     inputText='string'
 # )
-    return self.client.post_text(botName="Dwight", botAlias="$LATEST", userId="mama", inputText=message)
+    return self.client.post_text(botName="Dwight", botAlias="$LATEST", userId=userId, inputText=message)
