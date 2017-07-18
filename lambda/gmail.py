@@ -54,10 +54,8 @@ def handle(event):
   if access_token != None:
     if base_service.token_expired(user):
       user = refresh_access_token(user)
-    if underscore_name == "get_last_email_gmail":
-      return get_last_email_gmail(user)
-    if underscore_name == "search_gmail":
-      return search_gmail(user, event)
+    if underscore_name == "get_email_gmail":
+      return get_last_email_gmail(user, event)
   else:
     return base_service.send_api_auth_link(base_service.get_user_id(user))
 
@@ -67,7 +65,14 @@ def token_expired(user):
 def search_gmail(user, event):
   return utils.send_message("searching gmail event:" + json.dumps(event))
 
-def get_last_email_gmail(user):
+def get_search_query(**args):
+  res = args.pop("q", "")
+  for key in args:
+    res = res + " " + key + ":" args[key]
+  # is From To Subject after: before: yyyy/mm/dd
+  return res
+
+def get_last_email_gmail(user, event):
   res = base_service.authorized_curl("https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=1", user)
   print(res)
   message = get_message(res["messages"][0]["id"], user)
@@ -83,9 +88,6 @@ def get_message(message_id, user):
   url = "https://www.googleapis.com/gmail/v1/users/me/messages/{0}?format=metadata".format(message_id)
   res = base_service.authorized_curl(url, user)
   return res
-
-def search_by_content(content, user):
-  return []
 
 def get_body(message):
   #todo see why snippet is not proper
