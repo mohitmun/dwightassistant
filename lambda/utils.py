@@ -21,32 +21,34 @@ def send_card(message, title, subTitle, buttons_dict):
     for key in keyvalue:
       buttons = buttons + [{"text": key, "value": keyvalue[key]}]
   result = {
-      "sessionAttributes": {},
-      "dialogAction": {
-        "type": "Close",
-        "fulfillmentState": "Fulfilled",
-        "message": {
-          "contentType": "PlainText",
-          "content": message
-        }
-        ,
-       "responseCard": {
-          
-          "contentType": "application/vnd.amazonaws.card.generic",
-          "genericAttachments": [
-              {
-                 "title":title,
-                 "subTitle":subTitle,
-                 # "imageUrl":imageUrl,
-                 # "attachmentLinkUrl":attachmentLinkUrl,
-                 "buttons":buttons
-               } 
-           ] 
-         }
+    "sessionAttributes": {},
+    "dialogAction": {
+      "type": "Close",
+      "fulfillmentState": "Fulfilled",
+      "message": {
+        "contentType": "PlainText",
+        "content": message
+      }
+      ,
+     "responseCard": {
+        
+        "contentType": "application/vnd.amazonaws.card.generic",
+        "genericAttachments": [
+          {
+            "title":title,
+            "subTitle":subTitle,
+            # "imageUrl":imageUrl,
+            # "attachmentLinkUrl":attachmentLinkUrl,
+            "buttons":buttons
+          } 
+        ] 
       }
     }
+  }
   print("seinding card")
   print(result)
+  #todo
+  result.pop('responseCard', None)
   return result
 
 def send_message(message):
