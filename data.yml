@@ -82,9 +82,14 @@ intents:
       - 'play some spotify'
       - 'play music'
       - 'play some music'
+      - 'play some music by {artist}'
+      - 'play some {artist}'
       - 'resume music'
       - 'play song by {artist}'
       - 'play song {song}'
+      - 'play song {song} by {artist}'
+      - 'play {song} by artist {artist}'
+      - 'play song {song} by artist {artist}'
       - 'play album {album}'
     slots:
       - name: "artist"
