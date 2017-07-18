@@ -14,12 +14,12 @@ def get_latlong(s):
   res = json.loads(res)
   res = res["results"][0]["geometry"]["location"]
   return res
-
+# slack
+# <div id="special_formatting_text" class="special_formatting_tips showing" aria-hidden="true"><b>*bold*</b> <i>_italics_</i> ~strike~ <code>`code`</code> <code class="preformatted">```preformatted```</code> <span class="quote">&gt;quote</span></div>
 def send_card(message, title, subTitle, buttons_dict):
   buttons = []
-  for keyvalue in buttons_dict:
-    for key in keyvalue:
-      buttons = buttons + [{"text": key, "value": keyvalue[key]}]
+  for key in buttons_dict:
+    buttons = buttons + [{"text": key, "value": buttons_dict[key]}]
   result = {
     "sessionAttributes": {},
     "dialogAction": {
@@ -46,8 +46,7 @@ def send_card(message, title, subTitle, buttons_dict):
     }
   }
   #todo
-  a = result["dialogAction"].pop("responseCard", None)
-  print(a)
+  # a = result["dialogAction"].pop("responseCard", None)
   print("seinding card")
   print(result)
   return result
