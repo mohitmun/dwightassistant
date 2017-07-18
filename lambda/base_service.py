@@ -2,7 +2,6 @@ import utils
 import dynamodb
 import os
 import json
-import dotmap
 import time
 
 class BaseService:
@@ -104,5 +103,4 @@ class BaseService:
       res = {}
     else:
       res = json.loads(res)
-    res = dotmap.DotMap(res)
     return res
