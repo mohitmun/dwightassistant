@@ -1,5 +1,6 @@
 import boto3
 import data
+import os
 class LexApi:
   def __init__(self):
     self.client = boto3.client('lex-models')
@@ -13,7 +14,10 @@ class LexApi:
     return True
   def create_bot(self):
     params = data.get_bot()
-    params["checksum"] = self.get_bot()["checksum"]
+    try:
+      params["checksum"] = self.get_bot(params["name"])["checksum"]
+    except Exception as e:
+      pass
     response = self.client.put_bot(**params)
     return response
   def create_intents(self):
@@ -41,8 +45,8 @@ class LexApi:
     return self.client.get_bots()
   # def set_up_bot():
   #   pass
-  def get_bot(self):
-    return self.client.get_bot(name="Dwight",versionOrAlias="$LATEST")
+  def get_bot(self, name):
+    return self.client.get_bot(name=name,versionOrAlias="$LATEST")
   def get_bot_channel_associations(self):
     return self.client.get_bot_channel_associations(botName="Dwight",botAlias="LATEST")
   def get_intent(self, name):
@@ -64,4 +68,4 @@ class LexRunTimeApi:
 #     },
 #     inputText='string'
 # )
-    return self.client.post_text(botName="Dwight", botAlias="$LATEST", userId=userId, inputText=message)
+    return self.client.post_text(botName=os.environ["BOT_NAME"], botAlias="$LATEST", userId=userId, inputText=message)
