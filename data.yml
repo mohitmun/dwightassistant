@@ -17,52 +17,78 @@ bot:
   locale: 'en-US'
   childDirected: True
 slot_types:
-  - name: "query"
+  - name: "query_slot_type"
     description: "Search mail"
     enumerationValues:
       - value: booking
-        value: event
+      - value: event
+  - name: "email_type_slot_type"
+    description: "Unread, archived, sent, starred mails"
+    enumerationValues:
+      - value: unread
+      - value: archived
+      - value: sent
+      - value: starred
 intents:
-  - name: 'SearchGmail'
-    description: 'Search your gmail inbox'
-    sampleUtterances:
-      - "search gmail"
-      - "search for {q} in gmail"
-    slots:
-      - name: "q"
-        description: "Search query"
-        slotConstraint: 'Required'
-        slotType: 'query'
-        slotTypeVersion: "$LATEST"
-        sampleUtterances:
-          - "search for {q}"
-        valueElicitationPrompt:
-          messages:
-            - contentType: "PlainText"
-              content: "What is your search query"
-          maxAttempts: 3
-    fulfillmentActivity:
-      type: "CodeHook"
-      codeHook:
-        uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
-        messageVersion: "1.0"
-  - name: 'GetLastEmailGmail'
-    description: 'Get last email from you gmail inbox'
+  # - name: 'SearchGmail'
+  #   description: 'Search your gmail inbox'
+  #   sampleUtterances:
+  #     - "search gmail"
+  #     - "search for {q} in gmail"
+  #   slots:
+  #     - name: "q"
+  #       description: "Search query"
+  #       slotConstraint: 'Required'
+  #       slotType: 'query_slot_type'
+  #       slotTypeVersion: "$LATEST"
+  #       valueElicitationPrompt:
+  #         messages:
+  #           - contentType: "PlainText"
+  #             content: "What is your search query"
+  #         maxAttempts: 3
+  #   fulfillmentActivity:
+  #     type: "CodeHook"
+  #     codeHook:
+  #       uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
+  #       messageVersion: "1.0"
+  - name: 'GetEmailGmail'
+    description: 'Get emails from you gmail inbox'
     sampleUtterances:
       - "Show me last email"
       - "Get me last email"
-      - "whats my last email"
+      - "whats my last {email_type_slot} email"
+      - "show me emails after {time_slot}"
+      - "show me emails after {date_slot}"
+      - "show emails from {person_slot}"
+      - "show emails from {first_name_slot}"
     fulfillmentActivity:
-      type: "CodeHook"
-      codeHook:
-        uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
-        messageVersion: "1.0"
-    conclusionStatement:
-      messages:
-        - contentType: "PlainText"
-          content: "conclu 1"
-        - contentType: "PlainText"
-          content: "conclu 2"
+      #todo
+      # type: "CodeHook"
+      # codeHook:
+      #   uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
+      #   messageVersion: "1.0"
+      type: "ReturnIntent"
+    slots:
+      - name: "email_type_slot"
+        description: "Get Unread, starred, archived mails"
+        slotConstraint: "Optional"
+        slotType: 'email_type_slot_type'
+        slotTypeVersion: '$LATEST'
+      - name: "time_slot"
+        slotConstraint: "Optional"
+        slotType: "AMAZON.TIME"
+      - name: "date_slot"
+        slotConstraint: "Optional"
+        slotType: "AMAZON.DATE"
+      - name: "person_slot"
+        slotConstraint: "Optional"
+        slotType: "AMAZON.Person"
+      - name: "first_name_slot"
+        slotConstraint: "Optional"
+        slotType: "AMAZON.US_FIRST_NAME"
+  # - name: 'BookCabUber'
+  #   description: "Books cab for you"
+
   - name: 'ConnectSpotify'
     description: 'Connect your spotify acc'
     sampleUtterances:
@@ -84,6 +110,7 @@ intents:
       - 'play some music'
       - 'play some music by {artist}'
       - 'play some {artist}'
+      - 'play {artist}'
       - 'resume music'
       - 'play song by {artist}'
       - 'play song {song}'

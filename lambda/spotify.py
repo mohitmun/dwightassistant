@@ -74,21 +74,22 @@ def play_spotify_intent(user, event):
     if searched_song:
       return play_tracks_intent(user, [searched_song["uri"]])
     else:
-      return utils.send_message("No results found!")
+      #todo remove no result json
+      return utils.send_message("No results found! slots:" + json.dumps(slots))
   elif album != None:
     searched_album = search_album(user, album)
     if searched_album:
       return play_context_intent(user, searched_album["uri"])
     else:
-      return utils.send_message("No results found!")
+      return utils.send_message("No results found! slots:" + json.dumps(slots))
   elif artist != None:
     searched_artist = search_artist(user,artist)
     if searched_artist:
       return play_context_intent(user, searched_artist["uri"])
     else:
-      return utils.send_message("No results found!")
+      return utils.send_message("No results found! slots:" + json.dumps(slots))
   command = "-X PUT 'https://api.spotify.com/v1/me/player/play'"
-  res = base_service.authorized_curl(command)
+  res = base_service.authorized_curl(command, user)
   return utils.send_message(json.dumps(res) + " event: " + json.dumps(event))
 
 def stop_spotify_intent(user, event):

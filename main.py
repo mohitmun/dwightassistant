@@ -21,10 +21,12 @@ def setup_bot():
   api_lex.create_slot_types()
   api_lex.create_intents()
   api_lex.create_bot()
-  
+
 # create channels
 # api_gateway.set_up_dwight_gateway(region, account_no, lambda_function_name)
 #todo what about dynamo permission we are in limbo
 # api_lambda.add_permission(lambda_function_name, "lambda:*", "apigateway.amazonaws.com")
+# basic lamda policy scene
 # add envs
+# set auth url
 # gmail scene
