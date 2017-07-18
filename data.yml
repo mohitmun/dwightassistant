@@ -1,4 +1,22 @@
-
+bot:
+  name: "Dwight"
+  description: 'An Assistant to you'
+  clarificationPrompt:
+    messages:
+      - contentType: 'PlainText'
+        content: 'Welcome to Dwight. Type "Show me my last email"'
+  maxAttempts: 5
+  abortStatement:
+    messages: 
+      - contentType: 'PlainText'
+        content: 'Bot failed'
+  idleSessionTTLInSeconds: 123
+  processBehavior: 'BUILD'
+  locale: 'en-US'
+  childDirected: True
+slot_types:
+  - name: "query"
+    description: "Search mail"
 intents:
   - name: 'SearchGmail'
     description: 'Search your gmail inbox'
@@ -18,6 +36,11 @@ intents:
             - contentType: "PlainText"
               content: "What is your search query"
           maxAttempts: 3
+    fulfillmentActivity:
+      type: "CodeHook"
+      codeHook:
+        uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
+        messageVersion: "1.0"
   - name: 'GetLastEmailGmail'
     description: 'Get last email from you gmail inbox'
     sampleUtterances:
