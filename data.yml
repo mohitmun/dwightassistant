@@ -1,12 +1,12 @@
 #todo
 # some are Prompt rude
 bot:
-  name: "Dwight"
+  name: "TTT"
   description: 'An Assistant to you'
   clarificationPrompt:
     messages:
       - contentType: 'PlainText'
-        content: 'Welcome to Dwight. Type "Show me my last email"'
+        content: 'Welcome to Dwight. Connect as many services(Spotify, Uber and Gmail) as you want and Dwight will here to help. Just type "Book a cab" or "Play some music" or "Show my unread mails" and it goes on....'
     maxAttempts: 5
   abortStatement:
     messages: 
@@ -61,13 +61,6 @@ intents:
       - "show me emails after {date_slot}"
       - "show emails from {person_slot}"
       - "show emails from {first_name_slot}"
-    fulfillmentActivity:
-      #todo
-      # type: "CodeHook"
-      # codeHook:
-      #   uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
-      #   messageVersion: "1.0"
-      type: "ReturnIntent"
     slots:
       - name: "email_type_slot"
         description: "Get Unread, starred, archived mails"
@@ -86,19 +79,52 @@ intents:
       - name: "first_name_slot"
         slotConstraint: "Optional"
         slotType: "AMAZON.US_FIRST_NAME"
-  # - name: 'BookCabUber'
-  #   description: "Books cab for you"
-
+  - name: 'BookCabUber'
+    description: "Books cab for you"
+    sampleUtterances:
+      - I want to book a cab
+      - book uber
+      - book cab
+      - book cab for me
+      - book cab to {to_postal_address_slot}
+      - book cab to {to_street_address_slot}
+      - book cab from {from_postal_address_slot} to {to_postal_address_slot}
+      - book cab from {from_street_address_slot} to {to_street_address_slot}
+    slots:
+      - name: to_postal_address_slot
+        slotConstraint: Required
+        slotType: AMAZON.PostalAddress
+        valueElicitationPrompt:
+          messages:
+            - contentType: PlainText
+              content: Please tell me your destination address
+      - name: from_postal_address_slot
+        slotConstraint: Required
+        slotType: AMAZON.PostalAddress
+        valueElicitationPrompt:
+          messages:
+            - contentType: PlainText
+              content: Please tell me your pickup address
+      - name: to_street_address_slot
+        slotConstraint: Required
+        slotType: AMAZON.StreetAddress
+        valueElicitationPrompt:
+          messages:
+            - contentType: PlainText
+              content: Please tell me your destination address
+      - name: from_street_address_slot
+        slotConstraint: Required
+        slotType: AMAZON.StreetAddress
+        valueElicitationPrompt:
+          messages:
+            - contentType: PlainText
+              content: Please tell me your pickup address
   - name: 'ConnectSpotify'
     description: 'Connect your spotify acc'
     sampleUtterances:
       - 'add spotify'
       - 'connect spotify'
-    fulfillmentActivity:
-      type: "CodeHook"
-      codeHook:
-        uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
-        messageVersion: "1.0"
+
   - name: 'PlaySpotify'
     description: 'Play spotify'
     sampleUtterances:
@@ -146,11 +172,6 @@ intents:
             - contentType: "PlainText"
               content: "What album"
           maxAttempts: 3
-    fulfillmentActivity:
-      type: "CodeHook"
-      codeHook:
-        uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
-        messageVersion: "1.0"
   - name: 'StopSpotify'
     description: 'Stop spotify'
     sampleUtterances:
@@ -159,8 +180,3 @@ intents:
       - 'stop song on spotify'
       - 'pause spotify'
       - 'pause on spotify'
-    fulfillmentActivity:
-      type: "CodeHook"
-      codeHook:
-        uri: "arn:aws:lambda:us-east-1:420758276632:function:test"
-        messageVersion: "1.0"
