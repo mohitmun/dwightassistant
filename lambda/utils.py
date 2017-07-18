@@ -45,10 +45,11 @@ def send_card(message, title, subTitle, buttons_dict):
       }
     }
   }
+  #todo
+  a = result["dialogAction"].pop("responseCard", None)
+  print(a)
   print("seinding card")
   print(result)
-  #todo
-  result.pop('responseCard', None)
   return result
 
 def send_message(message):
