@@ -68,7 +68,7 @@ def search_gmail(user, event):
 def get_search_query(**args):
   res = args.pop("q", "")
   for key in args:
-    res = res + " " + key + ":" args[key]
+    res = res + " " + key + ":" + args[key]
   # is From To Subject after: before: yyyy/mm/dd
   return res
 
