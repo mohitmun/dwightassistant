@@ -1,4 +1,5 @@
 import yaml
+import os
 def get_bot():
   intents = []
   for i in get_intents():
@@ -13,7 +14,17 @@ def get_bot():
 
 def get_intents():
   with open("data.yml", 'r') as stream:
-    return yaml.load(stream)["intents"]
+    items = yaml.load(stream)["intents"]
+    for item in items:
+      item["fulfillmentActivity"] = {
+      "type": "CodeHook",
+      "codeHook": {
+  
+        "messageVersion": "1.0",
+        "uri": os.environ["LAMBDA_URI"]
+      }
+    }
+    return items
 
 def get_slot_types():
   with open("data.yml", 'r') as stream:
