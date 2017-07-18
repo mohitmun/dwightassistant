@@ -17,6 +17,9 @@ bot:
 slot_types:
   - name: "query"
     description: "Search mail"
+    enumerationValues:
+      - value: booking
+        value: event
 intents:
   - name: 'SearchGmail'
     description: 'Search your gmail inbox'
