@@ -27,8 +27,8 @@ class ApiGateway:
   def create_deployment(self, restApiId, stageName):
     return self.client.create_deployment(restApiId=restApiId,stageName=stageName)
 
-  def set_up_dwight_gateway(self, aws_region, aws_acct_id, lambda_function):
-    new_api = self.create_rest_api("Dwight2")
+  def set_up_dwight_gateway(self, api_name, aws_region, aws_acct_id, lambda_function):
+    new_api = self.create_rest_api(api_name)
     restApiId = new_api["id"]
     resources = self.get_resources(restApiId)
     root_id = resources["items"][0]["id"]
