@@ -16,7 +16,7 @@ class LexApi:
     params["checksum"] = self.get_bot()["checksum"]
     response = self.client.put_bot(**params)
     return response
-  def create_intent(self):
+  def create_intents(self):
     res = []
     for intent in data.get_intents():
       try:        
@@ -24,6 +24,17 @@ class LexApi:
       except Exception as e:
         pass        
       response = self.client.put_intent(**intent)
+      res.append(response)
+    return res
+  def create_slot_types(self):
+    print("chus")
+    res = []
+    for slot_type in data.get_slot_types():
+      try:        
+        slot_type["checksum"] = self.get_slot_type(slot_type["name"])["checksum"]
+      except Exception as e:
+        pass        
+      response = self.client.put_slot_type(**slot_type)
       res.append(response)
     return res
   def get_bots(self):
@@ -36,6 +47,8 @@ class LexApi:
     return self.client.get_bot_channel_associations(botName="Dwight",botAlias="LATEST")
   def get_intent(self, name):
     return self.client.get_intent(name=name, version="$LATEST")
+  def get_slot_type(self, name):
+    return self.client.get_slot_type(name=name, version="$LATEST")
 
 class LexRunTimeApi:
   """docstring for LexRunTimeApi"""
