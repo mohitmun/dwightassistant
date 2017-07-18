@@ -29,7 +29,7 @@ def save_access_token(event):
 
 def get_and_save_access_code(code, user_id):
   base64_id_secret = base64.b64encode("{0}:{1}".format(os.environ["SPOTIFY_CLIENT_ID"], os.environ["SPOTIFY_CLIENT_SECRET"]))
-  command = "curl -d grant_type=authorization_code -d code={0} -d redirect_uri={1} -H \"Authorization: Basic {2}\" \"https://accounts.spotify.com/api/token\"".format(code, quote(redirect_uri), base64_id_secret, 'utf-8')
+  command = "curl -d 'grant_type=authorization_code' -d 'code={0}' -d 'redirect_uri={1}' -H \"Authorization: Basic {2}\" \"https://accounts.spotify.com/api/token\"".format(code, quote(redirect_uri), base64_id_secret, 'utf-8')
   print(command)
   return base_service.get_and_save_access_code(user_id, command)
 
