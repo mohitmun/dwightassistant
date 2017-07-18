@@ -43,7 +43,7 @@ def get_authorization_url():
 def refresh_access_token(user):
   print("refresing token")
   command = "curl https://www.googleapis.com/oauth2/v4/token -d 'refresh_token={0}' -d 'client_id={1}' -d 'client_secret={2}' -d 'grant_type=refresh_token'".format(base_service.get_refresh_token(user), client_id, client_secret)
-  user = get_and_save_access_code(base_service.get_user_id(user), command)
+  user = base_service.get_and_save_access_code(base_service.get_user_id(user), command)
   return user
 
 def handle(event):
@@ -56,16 +56,21 @@ def handle(event):
       user = refresh_access_token(user)
     if underscore_name == "get_last_email_gmail":
       return get_last_email_gmail(user)
+    if underscore_name == "search_gmail":
+      return search_gmail(user, event)
   else:
     return base_service.send_api_auth_link(base_service.get_user_id(user))
 
 def token_expired(user):
   return base_service.token_expired(user)
 
+def search_gmail(user, event):
+  return utils.send_message("searching gmail event:" + json.dumps(event))
+
 def get_last_email_gmail(user):
   res = base_service.authorized_curl("https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=1", user)
   print(res)
-  message = get_message(res.messages[0].id, user)
+  message = get_message(res["messages"][0]["id"], user)
   return utils.send_message(format_gmail_message(message))
   # return utils.send_card(message.snippet, message.snippet, get_from(message), {"Reply":"Reply", "Archive":"Archive", "Delete": "Delete"})
 
@@ -84,19 +89,19 @@ def search_by_content(content, user):
 
 def get_body(message):
   #todo see why snippet is not proper
-  return message.snippet
+  return message["snippet"]
 
 def get_to(message):
-  h = message.payload.headers
-  return [a for a in h if a['name'] == "To"][0].value
+  h = message["payload"]["headers"]
+  return [a for a in h if a['name'] == "To"][0]["value"]
 
 def get_from(message):
-  h = message.payload.headers
-  return [a for a in h if a['name'] == "From"][0].value
+  h = message["payload"]["headers"]
+  return [a for a in h if a['name'] == "From"][0]["value"]
 
 def get_subject(message):
-  h = message.payload.headers
-  return [a for a in h if a['name'] == "Subject"][0].value
+  h = message["payload"]["headers"]
+  return [a for a in h if a['name'] == "Subject"][0]["value"]
 
 # DotMap(internalDate=u'1500214393000', historyId=u'11074', payload=DotMap(mimeType=u'multipart/mixed', headers=[DotMap(name=u'Received', value=u'from 816660975287 named unknown by gmailapi.google.com with HTTPREST; Sun, 16 Jul 2017 07:13:13 -0700'), DotMap(name=u'Date', value=u'Sun, 16 Jul 2017 07:13:13 -0700'), DotMap(name=u'From', value=u'Testmohitpara <testmohitpara@gmail.com>'), DotMap(name=u'To', value=u'testmohitpara@gmail.com'), DotMap(name=u'Message-Id', value=u'<CAKLm4q97Q=8AN=J+KX5kN2HP4dmzKS2Dzhz0LGKKgpuGx1kS-w@mail.gmail.com>'), DotMap(name=u'Subject', value=u'To: ravi@actonmagic.com new'), DotMap(name=u'Mime-Version', value=u'1.0'), DotMap(name=u'Content-Type', value=u'multipart/mixed; boundary="--==_mimepart_596b7471ccd32_131a43ff155c101d464970"; charset=UTF-8'), DotMap(name=u'Content-Transfer-Encoding', value=u'7bit')]), snippet=u'new', sizeEstimate=878, threadId=u'15d4bbef83ebb537', labelIds=[u'SENT', u'INBOX'], id=u'15d4bbef83ebb537')
 def test_user():
