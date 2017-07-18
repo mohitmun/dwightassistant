@@ -9,7 +9,10 @@ import base_service
 service = "spotify"
 base_service = base_service.BaseService(service)
 redirect_uri = utils.get_api_auth_url(service)
-oauth2_handler = OAuth2(os.environ['SPOTIFY_CLIENT_ID'], os.environ['SPOTIFY_CLIENT_SECRET'], "https://accounts.spotify.com/", redirect_uri, "authorize", "api/token")
+client_id = os.environ['SPOTIFY_CLIENT_ID']
+client_secret = os.environ['SPOTIFY_CLIENT_SECRET']
+oauth2_handler = OAuth2(client_id, client_secret, "https://accounts.spotify.com/", redirect_uri, "authorize", "api/token")
+#todo cut down some permission
 authorization_url = oauth2_handler.authorize_url('user-read-playback-state playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private user-library-read user-library-modify user-read-private user-read-birthdate user-read-email user-follow-read user-follow-modify user-top-read user-read-recently-played user-read-currently-playing user-modify-playback-state') + "&response_type=code"
 
 def save_access_token(event):
@@ -33,28 +36,43 @@ def get_and_save_access_code(code, user_id):
 def redirect_to_auth(event):
   return base_service.redirect_to_auth(event, authorization_url)
 
+def refresh_access_token(user):
+  print("refresing token")
+  command = "curl https://accounts.spotify.com/api/token -d 'refresh_token={0}' -d 'client_id={1}' -d 'client_secret={2}' -d 'grant_type=refresh_token'".format(base_service.get_refresh_token(user), client_id, client_secret)
+  user = base_service.get_and_save_access_code(base_service.get_user_id(user), command)
+  return user
+
 def handle(event):
   currentIntent = event["currentIntent"]["name"]
   underscore_name = utils.convert_camelcase(currentIntent)
   user = base_service.handle(event)
   access_token = base_service.get_access_token(user)
   if access_token != None:
+    if base_service.token_expired(user):
+      user = refresh_access_token(user)
     if underscore_name == "play_spotify":
-      return play_spotify(user)
+      return play_spotify(user, event)
     if underscore_name == "stop_spotify":
-      return stop_spotify(user)
+      return stop_spotify(user, event)
   else:
     return base_service.send_api_auth_link(user["user_id"]["S"])
 
-def play_spotify(user):
+def token_expired(user):
+  return base_service.token_expired(user)
+
+def play_spotify(user, event):
   command = "curl -X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Authorization: Bearer {0}'".format(base_service.get_access_token(user))
   print(command)
-  return utils.send_message(os.popen(command).read())
+  return utils.send_message(os.popen(command).read() + " event: " + json.dumps(event))
 
-def stop_spotify(user):
+def stop_spotify(user, event):
   command = "curl -X PUT 'https://api.spotify.com/v1/me/player/pause' -H 'Authorization: Bearer {0}'".format(base_service.get_access_token(user))
   print(command)
-  return utils.send_message(os.popen(command).read())
+  return utils.send_message(os.popen(command).read() + " event: " + json.dumps(event))
+
+def test_user():
+  return dynamodb.get_item("XB29T8")
+
 # curl -X PUT "https://api.spotify.com/v1/me/player/play" -H "Authorization: Bearer BQCF5bnU0EY0uTpkoC3HUl-66YJjZXu5ULt503BHEP-9WkMcro2xJcO4atyxl04hIdW4z_aLdHwslDX40oJSAsmX2h6e99Dvv4EOAl7Xj4dM_utbPJf9Adk0fuD0yas_vfPTjpjgfdmQYkE"
 
 # https://accounts.spotify.com/authorize/?client_id=a7ed7ac582c4421397e4336a9339d849&response_type=code&redirect_uri=https%3A%2F%2Fmamam.com&scope=user-modify-playback-state
