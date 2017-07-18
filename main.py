@@ -17,11 +17,14 @@ api_gateway = api_gateway.ApiGateway()
 # response = role.attach_policy(PolicyArn='arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess')
 # api_lambda.create_function(lambda_function_name, role.arn)
 
-# api_lex.put_slot_types()
-# api_lex.create_intents()
-# api_lex.create_bot()
+def setup_bot():
+  api_lex.create_slot_types()
+  api_lex.create_intents()
+  api_lex.create_bot()
+  
 # create channels
 # api_gateway.set_up_dwight_gateway(region, account_no, lambda_function_name)
 #todo what about dynamo permission we are in limbo
 # api_lambda.add_permission(lambda_function_name, "lambda:*", "apigateway.amazonaws.com")
 # add envs
+# gmail scene
