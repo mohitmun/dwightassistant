@@ -176,11 +176,20 @@ intents:
             - contentType: "PlainText"
               content: "What album"
           maxAttempts: 3
-  - name: 'StopSpotify'
-    description: 'Stop spotify'
-    sampleUtterances:
-      - 'pause song'
-      - 'stop song'
-      - 'stop song on spotify'
-      - 'pause spotify'
-      - 'pause on spotify'
+  - name: NextIntentSpotify
+    parentIntentSignature: AMAZON.NextIntent
+
+  - name: PauseIntentSpotify
+    parentIntentSignature: AMAZON.PauseIntent
+
+  - name: PreviousIntentSpotify
+    parentIntentSignature: AMAZON.PreviousIntent
+
+  - name: ShuffleOffIntentSpotify
+    parentIntentSignature: AMAZON.ShuffleOffIntent
+
+  - name: ShuffleOnIntentSpotify
+    parentIntentSignature: AMAZON.ShuffleOnIntent
+
+  - name: StopIntentSpotify
+    parentIntentSignature: AMAZON.StopIntent
