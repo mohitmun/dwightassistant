@@ -5,7 +5,7 @@ bot:
     messages:
       - contentType: 'PlainText'
         content: 'Welcome to Dwight. Type "Show me my last email"'
-  maxAttempts: 5
+    maxAttempts: 5
   abortStatement:
     messages: 
       - contentType: 'PlainText'
