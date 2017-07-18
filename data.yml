@@ -13,7 +13,7 @@ bot:
       - contentType: 'PlainText'
         content: 'Bot failed'
   idleSessionTTLInSeconds: 123
-  processBehavior: 'Build'
+  processBehavior: 'BUILD'
   locale: 'en-US'
   childDirected: True
 slot_types:
