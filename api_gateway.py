@@ -19,7 +19,7 @@ class ApiGateway:
     return self.client.put_method(restApiId=restApiId, resourceId=resourceId,httpMethod=method, authorizationType='NONE')
 
   def put_integration(self, restApiId, resourceId, httpMethod, uri):
-    return self.client.put_integration(restApiId=restApiId, resourceId=resourceId,httpMethod=httpMethod, type="AWS_PROXY",uri=uri, integrationHttpMethod='GET')
+    return self.client.put_integration(restApiId=restApiId, resourceId=resourceId,httpMethod=httpMethod, type="AWS_PROXY",uri=uri, integrationHttpMethod='POST')
 
   def get_integration(self, restApiId, resourceId):
     return self.client.get_integration(restApiId=restApiId, resourceId=resourceId, httpMethod='GET')

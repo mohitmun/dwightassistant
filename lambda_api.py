@@ -17,7 +17,7 @@ class LambdaApi:
           myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
     # return 1
     print("Uploading started")
-    return self.client.create_function(FunctionName=FunctionName, Runtime="python2.7", Role=Role, Handler="lambda_handler", Code={"ZipFile": open("lambda.zip", "rb").read()})
+    return self.client.create_function(FunctionName=FunctionName, Runtime="python2.7", Role=Role, Handler="lambda_function.lambda_handler", Code={"ZipFile": open("lambda.zip", "rb").read()})
 
   def update_function_code(self, FunctionName):
     with zipfile.ZipFile('lambda.zip', 'w') as myzip:
