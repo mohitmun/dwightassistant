@@ -20,7 +20,7 @@ def send_card(message, title, subTitle, buttons_dict):
   for keyvalue in buttons_dict:
     for key in keyvalue:
       buttons = buttons + [{"text": key, "value": keyvalue[key]}]
-  return {
+  result = {
       "sessionAttributes": {},
       "dialogAction": {
         "type": "Close",
@@ -45,13 +45,16 @@ def send_card(message, title, subTitle, buttons_dict):
          }
       }
     }
+  print("seinding card")
+  print(result)
+  return result
 
 def send_message(message):
   if type(message) is dict:
     message = "Dict: "+ json.dumps(message)
   if type(message) is list:
     message = "List: " + json.dumps(message)
-  return {
+  result = {
     "sessionAttributes": {},
     "dialogAction": {
       "type": "Close",
@@ -62,6 +65,9 @@ def send_message(message):
       }
     }
   }
+  print("sending message")
+  print(result)
+  return result
   # return {
     #   "sessionAttributes": {},
     #   "dialogAction": {
