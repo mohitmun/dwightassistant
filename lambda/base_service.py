@@ -98,7 +98,11 @@ class BaseService:
     cmd = "curl {0}".format(s)
     print(cmd)
     res = os.popen(cmd).read()
-    res = json.loads(res)
+    print("res:" + str(res))
+    if res == "":
+      print("response is blank")
+      res = {}
+    else:
+      res = json.loads(res)
     res = dotmap.DotMap(res)
-    print(res)
     return res
