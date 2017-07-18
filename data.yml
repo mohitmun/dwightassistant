@@ -1,3 +1,5 @@
+#todo
+# some are Prompt rude
 bot:
   name: "Dwight"
   description: 'An Assistant to you'
@@ -11,7 +13,7 @@ bot:
       - contentType: 'PlainText'
         content: 'Bot failed'
   idleSessionTTLInSeconds: 123
-  processBehavior: 'BUILD'
+  processBehavior: 'Build'
   locale: 'en-US'
   childDirected: True
 slot_types:
@@ -74,10 +76,44 @@ intents:
   - name: 'PlaySpotify'
     description: 'Play spotify'
     sampleUtterances:
-      - 'play song'
-      - 'play song on spotify'
+      - 'resume spotify'
       - 'play spotify'
       - 'play on spotify'
+      - 'play some spotify'
+      - 'play music'
+      - 'play some music'
+      - 'resume music'
+      - 'play song by {artist}'
+      - 'play song {song}'
+      - 'play album {album}'
+    slots:
+      - name: "artist"
+        description: "Spotify artist"
+        slotConstraint: 'Optional'
+        slotType: 'AMAZON.Artist'
+        valueElicitationPrompt:
+          messages:
+            - contentType: "PlainText"
+              content: "What artist"
+          maxAttempts: 3
+      - name: "song"
+        description: "Spotify song"
+        slotConstraint: 'Optional'
+        slotType: 'AMAZON.MusicRecording'
+        valueElicitationPrompt:
+          messages:
+            - contentType: "PlainText"
+              content: "What song"
+          maxAttempts: 3
+      - name: "album"
+        description: "Spotify album"
+        slotConstraint: 'Optional'
+        slotType: 'AMAZON.MusicAlbum'
+        valueElicitationPrompt:
+          messages:
+            - contentType: "PlainText"
+              content: "What album"
+          maxAttempts: 3
     fulfillmentActivity:
       type: "CodeHook"
       codeHook:
