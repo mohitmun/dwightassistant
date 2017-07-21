@@ -8,7 +8,7 @@ def convert_camelcase(name):
 def get_api_auth_url(end_point):
   return os.environ['OAUTH_APIGATEWAY_URL'] + end_point
 
-def get_latlong(s):
+def get_latlng(s):
   command = "curl 'https://maps.googleapis.com/maps/api/geocode/json?address={0}'".format(s.replace(" ", "+"))
   res = os.popen(command).read()
   res = json.loads(res)

@@ -52,7 +52,7 @@ def handle(event):
     if underscore_name == "play_spotify":
       return play_spotify_intent(user, event)
     if underscore_name == "stop_spotify":
-      return stop_spotify_intent(user, event)
+      return stop_spotify_intent(user)
     if underscore_name == "next_intent_spotify":
       return next_intent_spotify(user);
     if underscore_name == "pause_intent_spotify":
@@ -83,38 +83,42 @@ def play_spotify_intent(user, event):
     else:  
       searched_song = search_song(user, song)
     if searched_song:
-      return play_tracks_intent(user, [searched_song["uri"]])
+      return play_tracks_intent(user, [searched_song["uri"]], get_track_info(searched_song))
     else:
       #todo remove no result json
-      return utils.send_message("No results found! slots:" + json.dumps(slots))
+      return utils.send_message("No results found!")
   elif album != None:
     searched_album = search_album(user, album)
     if searched_album:
-      return play_context_intent(user, searched_album["uri"])
+      return play_context_intent(user, searched_album["uri"], "Playing album {}".format(searched_album["name"]))
     else:
-      return utils.send_message("No results found! slots:" + json.dumps(slots))
+      return utils.send_message("No results found!")
   elif artist != None:
     searched_artist = search_artist(user,artist)
     if searched_artist:
-      return play_context_intent(user, searched_artist["uri"])
+      return play_context_intent(user, searched_artist["uri"], "Playing artist {}".format(searched_artist["name"]))
     else:
-      return utils.send_message("No results found! slots:" + json.dumps(slots))
-  command = "-X PUT 'https://api.spotify.com/v1/me/player/play'"
-  res = base_service.authorized_curl(command, user)
-  return utils.send_message(json.dumps(res) + " event: " + json.dumps(event))
+      return utils.send_message("No results found!")
+  return play_intent_spotify(user)
+
+def get_track_info(track):
+  try:
+    return "Track: {}\nArtist: {}\nAlbum: {}".format(track["name"], track["artists"][0]["name"], track["album"]["name"])
+  except Exception as e:
+    return "Playing track"
 
 def play_intent_spotify(user):
   command = "-X PUT 'https://api.spotify.com/v1/me/player/play'"
   res = base_service.authorized_curl(command, user)
-  return utils.send_message("Playing Song..")
+  return utils.send_message("Resuming playback on spotify")
 
 def next_intent_spotify(user):
-  command = "-X PUT 'https://api.spotify.com/v1/me/player/next'"
+  command = "-X POST 'https://api.spotify.com/v1/me/player/next'"
   res = base_service.authorized_curl(command, user)
   return utils.send_message("Playing Next Song..")
 
 def previous_intent_spotify(user):
-  command = "-X PUT 'https://api.spotify.com/v1/me/player/previous'"
+  command = "-X POST 'https://api.spotify.com/v1/me/player/previous'"
   res = base_service.authorized_curl(command, user)
   return utils.send_message("Playing Previous Song..")
 
@@ -129,7 +133,7 @@ def shuffle_off_intent_spotify(user):
   return utils.send_message("Shuffle off..")
 
 def stop_spotify_intent(user):
-  command = "-X PUT 'https://api.spotify.com/v1/me/player/play'"
+  command = "-X PUT 'https://api.spotify.com/v1/me/player/pause'"
   res = base_service.authorized_curl(command, user)
   return utils.send_message("Stopping spotify...")
 
@@ -143,17 +147,17 @@ def search_song_by_artist(user, track_q, artist_q):
   else:
     return None
 
-def play_tracks_intent(user, uris):
+def play_tracks_intent(user, uris, message):
   data = {"uris": uris}
   command = "-X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Content-Type: application/json' --data '{}'".format(json.dumps(data))
   res = base_service.authorized_curl(command, user)
-  return utils.send_message("played track: " + json.dumps(uris) + " res: " + json.dumps(res))
+  return utils.send_message(message)
 
-def play_context_intent(user, context_uri):
+def play_context_intent(user, context_uri, message):
   data = {"context_uri": context_uri}
   command = "-X PUT 'https://api.spotify.com/v1/me/player/play' -H 'Content-Type: application/json' --data '{}'".format(json.dumps(data))
   res = base_service.authorized_curl(command, user)
-  return utils.send_message("playing context: " + json.dumps(context_uri) + " res: " + json.dumps(res))
+  return utils.send_message(message)
 
 def search_album(user, q):
   res = search_item(user, q, "album")

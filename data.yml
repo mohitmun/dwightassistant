@@ -1,12 +1,19 @@
 #todo
 # some are Prompt rude
 bot:
-  name: "TTT"
+  name: "Dwight"
   description: 'An Assistant to you'
   clarificationPrompt:
     messages:
       - contentType: 'PlainText'
-        content: 'Welcome to Dwight. Connect as many services(Spotify, Uber and Gmail) as you want and Dwight will here to help. Just type "Book a cab" or "Play some music" or "Show my unread mails" and it goes on....'
+        content: |
+          'Welcome to Dwight. Connect as many services(Spotify, Uber and Gmail) as you want and Dwight will here to help. Just type "Book a cab" or "Play some music" or "Show my unread mails" and it goes on....
+          For judging please use following credentials
+          Use following credentials
+          Gmail: aws.chatbot.mohit@gmail.com
+          Spotify Username: awschatbotmohit
+          Uber number: +917977044260
+          Password is User1234 for all'
     maxAttempts: 5
   abortStatement:
     messages: 
@@ -29,6 +36,57 @@ slot_types:
       - value: archived
       - value: sent
       - value: starred
+  - name: "email_message_slot_type"
+    description: "email message"
+    enumerationValues:
+      - value: sure
+      - value: thanks
+      - value: i am on it
+      - value: cool
+      - value: Hey whats up
+      - value: i am fine
+  - name: subject_slot_type
+    description: "subject for email"    
+    enumerationValues:
+      - value: hello
+      - value: hi
+  - name: reply_intent_slot_type
+    description: "Chck if user want to reply"    
+    enumerationValues:
+      - value: reply
+  - name: email_slot_type
+    description: "email address"    
+    enumerationValues:
+      - value: mohmun16@gmail.com
+      - value: aws.chatbot.mohit@gmail.com
+      - value: mohitcrox@gmail.com
+  - name: from_work_slot_type
+    description: "work home uber"
+    enumerationValues:
+      - value: from work
+  - name: to_work_slot_type
+    description: "work home uber"
+    enumerationValues:
+      - value: to work
+  - name: to_home_slot_type
+    description: "work home uber"
+    enumerationValues:
+      - value: to home
+  - name: from_home_slot_type
+    description: "work home uber"
+    enumerationValues:
+      - value: from home
+  - name: fare_slot_type
+    description: "work home uber"
+    enumerationValues:
+      - value: first
+      - value: second
+      - value: third
+      - value: fourth
+      - value: uberGO
+      - value: uberX
+      - value: UberXL
+      - value: UberBLACK
 intents:
   # - name: 'SearchGmail'
   #   description: 'Search your gmail inbox'
@@ -55,13 +113,33 @@ intents:
     description: 'Get emails from you gmail inbox'
     sampleUtterances:
       - "Show me last email"
+      - "Show me last email from {from_person_slot}"
+      - "show emails from {from_person_slot}"
+      - "Show me last email to {to_person_slot}"
+      - "show emails to {to_person_slot}"
+      - "Show me last email from {from_first_name_slot}"
+      - "show emails from {from_first_name_slot}"
+      - "Show me last email to {to_first_name_slot}"
+      - "show emails to {to_first_name_slot}"
       - "Get me last email"
       - "whats my last {email_type_slot} email"
       - "show me emails after {time_slot}"
       - "show me emails after {date_slot}"
-      - "show emails from {person_slot}"
-      - "show emails from {first_name_slot}"
+      - "search emails for {query_slot}"
+      - "search {query_slot} in emails"
+      - "search emails containing {query_slot}"
+      - show me {email_type_slot} emails
     slots:
+      - name: "query_slot"
+        description: "Search for anything"
+        slotConstraint: Optional
+        slotType: 'query_slot_type'
+        slotTypeVersion: '$LATEST'
+        valueElicitationPrompt:
+          maxAttempts: 3
+          messages:
+            - contentType: PlainText
+              content: What is your query for searching mails?
       - name: "email_type_slot"
         description: "Get Unread, starred, archived mails"
         slotConstraint: "Optional"
@@ -73,10 +151,16 @@ intents:
       - name: "date_slot"
         slotConstraint: "Optional"
         slotType: "AMAZON.DATE"
-      - name: "person_slot"
+      - name: "from_person_slot"
         slotConstraint: "Optional"
         slotType: "AMAZON.Person"
-      - name: "first_name_slot"
+      - name: "to_person_slot"
+        slotConstraint: "Optional"
+        slotType: "AMAZON.Person"
+      - name: "from_first_name_slot"
+        slotConstraint: "Optional"
+        slotType: "AMAZON.US_FIRST_NAME"
+      - name: "to_first_name_slot"
         slotConstraint: "Optional"
         slotType: "AMAZON.US_FIRST_NAME"
   - name: 'BookCabUber'
@@ -87,12 +171,18 @@ intents:
       - book cab
       - book cab for me
       - book cab to {to_postal_address_slot}
-      - book cab to {to_street_address_slot}
       - book cab from {from_postal_address_slot} to {to_postal_address_slot}
-      - book cab from {from_street_address_slot} to {to_street_address_slot}
+      - book cab {from_work_slot}
+      - book cab {to_work_slot}
+      - book cab {from_home_slot}
+      - book cab {to_home_slot}
+      - book cab {to_work_slot} {from_home_slot}
+      - book cab {from_home_slot} {to_work_slot}
+      - book cab {to_home_slot} {from_work_slot}
+      - book cab {from_work_slot} {to_home_slot}
     slots:
       - name: to_postal_address_slot
-        slotConstraint: Required
+        slotConstraint: Optional
         slotType: AMAZON.PostalAddress
         valueElicitationPrompt:
           maxAttempts: 3
@@ -100,35 +190,95 @@ intents:
             - contentType: PlainText
               content: Please tell me your destination address
       - name: from_postal_address_slot
-        slotConstraint: Required
+        slotConstraint: Optional
         slotType: AMAZON.PostalAddress
         valueElicitationPrompt:
           maxAttempts: 3
           messages:
             - contentType: PlainText
               content: Please tell me your pickup address
-      - name: to_street_address_slot
-        slotConstraint: Required
-        slotType: AMAZON.StreetAddress
-        valueElicitationPrompt:
-          maxAttempts: 3
-          messages:
-            - contentType: PlainText
-              content: Please tell me your destination address
-      - name: from_street_address_slot
-        slotConstraint: Required
-        slotType: AMAZON.StreetAddress
-        valueElicitationPrompt:
-          maxAttempts: 3
-          messages:
-            - contentType: PlainText
-              content: Please tell me your pickup address
+      - name: from_work_slot
+        slotConstraint: Optional
+        slotType: from_work_slot_type
+        slotTypeVersion: "$LATEST"
+      - name: to_work_slot
+        slotConstraint: Optional
+        slotType: to_work_slot_type
+        slotTypeVersion: "$LATEST"
+      - name: to_home_slot
+        slotConstraint: Optional
+        slotType: to_home_slot_type
+        slotTypeVersion: "$LATEST"
+      - name: from_home_slot
+        slotConstraint: Optional
+        slotType: from_home_slot_type
+        slotTypeVersion: "$LATEST"
+      - name: fare_slot
+        slotConstraint: Optional
+        slotType: fare_slot_type
+        slotTypeVersion: "$LATEST"
   - name: 'ConnectSpotify'
     description: 'Connect your spotify acc'
     sampleUtterances:
       - 'add spotify'
       - 'connect spotify'
 
+  - name: 'DeleteMailGmail'
+    description: 'Delete message in Gmail'
+    sampleUtterances:
+      - 'Delete this'
+      - 'delete'
+      - 'trash'
+      - 'trash this'
+  - name: 'SendMailGmail'
+    description: 'Send message in Gmail'
+    sampleUtterances:
+      - 'send email'
+      - 'send message'
+      - 'send message {email_message_slot}'
+      - 'send message {email_message_slot} to {email_slot} with {subject_slot}'
+      - 'send email {email_message_slot} to {email_slot} with {subject_slot}'
+      - 'send message {email_message_slot} with {subject_slot}'
+      - 'send email {email_message_slot} with {subject_slot}'
+      - 'send message {email_message_slot} with subject {subject_slot}'
+      - 'send email {email_message_slot} with subject {subject_slot}'
+      - 'email {email_message_slot} with subject {subject_slot}'
+      - '{reply_intent_slot} email'
+      - '{reply_intent_slot} message'
+      - '{reply_intent_slot} email {email_message_slot}'
+      - '{reply_intent_slot} message {email_message_slot}'
+    slots:
+      - name: reply_intent_slot
+        slotConstraint: Optional
+        slotType: reply_intent_slot_type
+        slotTypeVersion: "$LATEST"
+      - name: email_message_slot
+        slotConstraint: Optional
+        slotType: email_message_slot_type
+        slotTypeVersion: "$LATEST"
+        valueElicitationPrompt:
+          maxAttempts: 3
+          messages:
+            - contentType: PlainText
+              content: What should I send in body?
+      - name: subject_slot
+        slotConstraint: Required
+        slotType: subject_slot_type
+        slotTypeVersion: "$LATEST"
+        valueElicitationPrompt:
+          maxAttempts: 3
+          messages:
+            - contentType: PlainText
+              content: What should be the subject?
+      - name: email_slot
+        slotConstraint: Optional
+        slotType: email_slot_type
+        slotTypeVersion: "$LATEST"
+        valueElicitationPrompt:
+          maxAttempts: 3
+          messages:
+            - contentType: PlainText
+              content: Please provide email address
   - name: 'PlaySpotify'
     description: 'Play spotify'
     sampleUtterances:
@@ -176,6 +326,14 @@ intents:
             - contentType: "PlainText"
               content: "What album"
           maxAttempts: 3
+  - name: 'StopSpotify'
+    description: 'Stop spotify'
+    sampleUtterances:
+      - 'pause song'
+      - 'stop song'
+      - 'stop song on spotify'
+      - 'pause spotify'
+      - 'pause on spotify'
   - name: NextIntentSpotify
     parentIntentSignature: AMAZON.NextIntent
 

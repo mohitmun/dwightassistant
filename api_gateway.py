@@ -38,4 +38,5 @@ class ApiGateway:
       self.put_method(restApiId, new_resource["id"], "GET")
       uri = "arn:aws:apigateway:{0}:lambda:path/2015-03-31/functions/arn:aws:lambda:{0}:{1}:function:{2}/invocations".format(aws_region, aws_acct_id, lambda_function)
       self.put_integration(restApiId, new_resource["id"], "GET", uri)
-    return self.create_deployment(restApiId, "prod")
+    self.create_deployment(restApiId, "prod")
+    return restApiId

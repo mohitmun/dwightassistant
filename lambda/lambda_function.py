@@ -7,6 +7,8 @@ import utils
 # curl "https://graph.facebook.com/v2.6/1092183514214793?access_token="
 
 def lambda_handler(event, context):
+  print("Incoming event")
+  print(event)
   if "currentIntent" in event:
     currentIntent = event["currentIntent"]["name"]
     service = utils.convert_camelcase(currentIntent).split("_")[-1]
@@ -14,6 +16,8 @@ def lambda_handler(event, context):
       return gmail.handle(event)
     if service == "spotify":
       return spotify.handle(event)
+    if service == "uber":
+      return uber.handle(event)
   elif "resource" in event:
     if event["resource"] == "/spotify":
       return spotify.save_access_token(event)
@@ -40,7 +44,7 @@ def test():
   "bot": {
     "alias": "null",
     "version": "$LATEST",
-    "name": "Dwight"
+    "name": os.environ["BOT_NAME"]
   },
   "userId": "yf3gelerh094t4w42kqqtcc7d9oejbhv",
   "inputTranscript": "show me my last mail",

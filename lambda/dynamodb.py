@@ -1,6 +1,7 @@
 import boto3
 import string
 import random
+import os
 client = boto3.client('dynamodb')
 
 TableName = os.environ["BOT_NAME"]

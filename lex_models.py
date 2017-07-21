@@ -31,7 +31,6 @@ class LexApi:
       res.append(response)
     return res
   def create_slot_types(self):
-    print("chus")
     res = []
     for slot_type in data.get_slot_types():
       try:        

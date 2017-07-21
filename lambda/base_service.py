@@ -49,7 +49,8 @@ class BaseService:
   def get_refresh_token(self, user):
     if self.refresh_token_key() in user:
       return user[self.refresh_token_key()]["S"]
-    return json.loads(user[self.auth_key()])["S"]
+    print(json.loads(user[self.auth_key()]))
+    return json.loads(user[self.auth_key()])["refresh_token"]
 
   def get_expires_in(self, user):
     if self.expires_in_key() in user:

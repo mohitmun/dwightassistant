@@ -16,7 +16,7 @@ class LambdaApi:
         for f in files:
           myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
     # return 1
-    print("Uploading started")
+    print("Uploading code")
     return self.client.create_function(FunctionName=FunctionName, Runtime="python2.7", Role=Role, Handler="lambda_function.lambda_handler", Code={"ZipFile": open("lambda.zip", "rb").read()})
 
   def update_function_code(self, FunctionName):
@@ -25,7 +25,7 @@ class LambdaApi:
         for f in files:
           myzip.write(os.path.join(root, f), os.path.join(root, f)[7:])
     # return 1
-    print("Uploading started")
+    print("Uploading code")
     res = self.client.update_function_code(FunctionName=FunctionName, ZipFile=open("lambda.zip", "rb").read())
     try:
       os.system('osascript -e \'display notification "Uplading done" with title "ApiGateway"\'')
@@ -38,7 +38,7 @@ class LambdaApi:
     #from http://boto3.readthedocs.io/en/latest/reference/services/lambda.html
     # Warning
     # If you add a permission without providing the source ARN, any AWS account that creates a mapping to your function ARN can send events to invoke your Lambda function.
-    return self.client.add_permission(FunctionName=FunctionName,StatementId="ID-{0}-{1}".format(FunctionName, int(time.time())), Action= Action, Principal=Principal)
+    return self.client.add_permission(FunctionName=FunctionName,StatementId="ID{0}{1}".format(FunctionName, int(time.time())), Action= Action, Principal=Principal)
 
   def update_function_configuration(self, FunctionName):
     return self.client.update_function_configuration(FunctionName= FunctionName, Environment={'Variables': env.get_env()})
