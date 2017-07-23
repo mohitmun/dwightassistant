@@ -12,7 +12,7 @@ bot:
           Use following credentials
           Gmail: aws.chatbot.mohit@gmail.com
           Spotify Username: awschatbotmohit
-          Uber number: +917977044260
+          Uber is already connected
           Password is User1234 for all'
     maxAttempts: 5
   abortStatement:
