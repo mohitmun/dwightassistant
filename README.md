@@ -2,6 +2,10 @@
 Project I built for AWS Chatbot challenge
 #### [Here](https://www.youtube.com/playlist?list=PLQcGlLJQrlIAZ6Rh2gptL7n-dF749-2C4) is full demo playlist
 
+![Spotify](spot.gif)
+![Gmail](gmail.gif)
+![Uber](uber.gif)
+
 ## What it does
 
 Dwight is a chatbot assistant that helps you connect to multiple services by adding them via OAuth. The services that I have added for now are:
