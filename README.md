@@ -2,8 +2,11 @@
 Project I built for AWS Chatbot challenge
 #### [Here](https://www.youtube.com/playlist?list=PLQcGlLJQrlIAZ6Rh2gptL7n-dF749-2C4) is full demo playlist
 
+#### Spotify
 ![Spotify](spot.gif)
+#### Gmail
 ![Gmail](gmail.gif)
+#### Uber
 ![Uber](uber.gif)
 
 ## What it does
@@ -16,7 +19,7 @@ Spotify : Developing this skill was really fun and now I can control my music on
 
 Uber: Travelling takes an important part of our day and organising this is efficiently is a major concern for me. Using this skill I can now book an Uber and constantly view the current prices.
 
-###Key Features
+### Key Features
 1. One command and deploy whole stack to AWS. It leverages boto3 client to create/edit/update/delete resources in AWS
 2. Highly extendable architecture. Its extremely easy to add new services which uses Oauth to give access to user data
 3. Search mails by keywords, time, name of user who sent it, unread, starred etc
