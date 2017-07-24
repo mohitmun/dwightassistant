@@ -1,3 +1,4 @@
+![Dwight Schrute](dwight120png)
 # DwightAssistant
 Project I built for AWS Chatbot challenge
 #### [Here](https://www.youtube.com/playlist?list=PLQcGlLJQrlIAZ6Rh2gptL7n-dF749-2C4) is full demo playlist
@@ -42,7 +43,8 @@ Uber: Travelling takes an important part of our day and organising this is effic
 
 
 ## TODO
-
+- Uber schedule
+- Trigger messages from Lambda
 - Integrate Google drive, Youtube, Reddit, Facebook, Twitter, Google Maps etc.
 - For Gmail integration, push notification for incoming mails 
 - Developer mode - Train lex through boto3 client.
