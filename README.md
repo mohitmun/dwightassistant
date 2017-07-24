@@ -1,4 +1,4 @@
-![Dwight Schrute](dwight120png)
+![Dwight Schrute](dwight120.png)
 # DwightAssistant
 Project I built for AWS Chatbot challenge
 #### [Here](https://www.youtube.com/playlist?list=PLQcGlLJQrlIAZ6Rh2gptL7n-dF749-2C4) is full demo playlist
