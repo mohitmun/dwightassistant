@@ -7,13 +7,13 @@ bot:
     messages:
       - contentType: 'PlainText'
         content: |
-          'Welcome to Dwight. Connect as many services(Spotify, Uber and Gmail) as you want and Dwight will here to help. Just type "Book a cab" or "Play some music" or "Show my unread mails" and it goes on....
+          Welcome to Dwight. Connect as many services(Spotify, Uber and Gmail) as you want and Dwight will here to help. Just type "Book a cab" or "Play some music" or "Show my unread mails" and it goes on....
           For judging please use following credentials
           Use following credentials
           Gmail: aws.chatbot.mohit@gmail.com
           Spotify Username: awschatbotmohit
           Uber is already connected
-          Password is User1234 for all'
+          Password is User1234 for all
     maxAttempts: 5
   abortStatement:
     messages: 
